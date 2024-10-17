@@ -3,11 +3,10 @@ using Core.Application.Services;
 using Core.ConventionalServices;
 using EMS.Witness.Platforms.Services;
 using EMS.Witness.Shared.Toasts;
-using static Core.Application.CoreApplicationConstants;
 
 namespace EMS.Witness.Services;
 
-public class RpcInitalizer : IRpcInitalizer
+public class RpcInitializer : IRpcInitalizer
 {
     private readonly IToaster toaster;
 	private readonly IWitnessState _witnessState;
@@ -16,7 +15,7 @@ public class RpcInitalizer : IRpcInitalizer
 	private readonly IPermissionsService permissionsService;
 	private readonly WitnessContext context;
 	
-	public RpcInitalizer(
+	public RpcInitializer(
 		IWitnessState witnessState,
         IHandshakeService handshakeService,
         IWitnessContext context,
