@@ -8,6 +8,8 @@ namespace EMS.Witness.Services;
 
 public class RpcInitializer : IRpcInitalizer
 {
+	public const string ANDROID_EMULATOR_HOST_LOOPBACK = "10.0.0.2";
+
     private readonly IToaster toaster;
 	private readonly IWitnessState _witnessState;
 	private readonly IHandshakeService _handshakeService;
@@ -66,7 +68,7 @@ public class RpcInitializer : IRpcInitalizer
 	private async Task<string> Handshake()
 	{
 #if DEBUG
-		return "10.0.2.2";
+		return ANDROID_EMULATOR_HOST_LOOPBACK;
 #else
 
 		this.context.RaiseIsHandshakingEvent(true);
