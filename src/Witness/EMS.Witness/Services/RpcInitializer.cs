@@ -1,4 +1,5 @@
-﻿using Core.Application.Rpc;
+﻿using Core.Application;
+using Core.Application.Rpc;
 using Core.Application.Services;
 using Core.ConventionalServices;
 using EMS.Witness.Platforms.Services;
@@ -73,7 +74,7 @@ public class RpcInitializer : IRpcInitalizer
 
 		this.context.RaiseIsHandshakingEvent(true);
 
-		var hostIp = await _handshakeService.Handshake(Apps.WITNESS, CancellationToken.None);
+		var hostIp = await _handshakeService.Handshake(CoreApplicationConstants.Apps.WITNESS, CancellationToken.None);
 		if (hostIp == null)
 		{
 			this.context.RaiseIsHandshakingEvent(false);
