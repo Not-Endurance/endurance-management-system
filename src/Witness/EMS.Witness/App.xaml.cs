@@ -5,6 +5,7 @@ using Core.Enums;
 using EMS.Witness.Rpc;
 using EMS.Witness.Services;
 using EMS.Witness.Shared;
+using System.Timers;
 
 namespace EMS.Witness;
 
@@ -17,6 +18,7 @@ public partial class App : Application
     private readonly IStartlistService startlistService;
     private readonly IParticipantsClient participantsClient;
     private readonly IParticipantsService participantsService;
+	System.Timers.Timer? _timer;
 
     public App(
 		IRpcInitalizer rpcInitalizer,
@@ -44,9 +46,13 @@ public partial class App : Application
 
 		this.AttachEventHandlers();
 
+		window.Created += (a, b) => { _timer?.Start(); };
 		window.Resumed += OnResumed;
 		window.Deactivated += OnDeactivated;
 		window.Destroying += DetachEventHandlers;
+		
+		_timer = new System.Timers.Timer(TimeSpan.FromSeconds(1));
+		_timer.Elapsed += Refresh;
 
 		return window;
 	}
@@ -55,10 +61,22 @@ public partial class App : Application
 	{
 		await Task.Delay(TimeSpan.FromSeconds(1));
 		await NavMenu.StartRpcConnections(_rpcInitalizer);
+		_timer?.Start();
 	}
 
-    private async void OnDeactivated(object? sender, EventArgs args)
+	async void Refresh(object? _, ElapsedEventArgs __)
 	{
+		if (!_rpcSocket.IsConnected)
+		{
+			return;
+		}
+		await participantsService.Load();
+		await startlistService.Load();
+	}
+
+	private async void OnDeactivated(object? sender, EventArgs args)
+	{
+		_timer?.Stop();
 		await Task.WhenAll(
 			_persistence.Store(),
 			_rpcSocket.Disconnect());

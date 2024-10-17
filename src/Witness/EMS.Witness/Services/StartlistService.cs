@@ -27,8 +27,11 @@ public class StartlistService : IStartlistService
         var result = await this.startlistClient.Load();
         if (result.IsSuccessful)
         {
-            this.context.Startlists = result.Data!;
-            this.SelectList();
+            lock (Startlist)
+            {
+				this.context.Startlists = result.Data!;
+				this.SelectList();
+			}
         }
     }
 

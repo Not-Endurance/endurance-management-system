@@ -66,6 +66,10 @@ public class RpcInitalizer : IRpcInitalizer
 
 	private async Task<string> Handshake()
 	{
+#if DEBUG
+		return "10.0.2.2";
+#else
+
 		this.context.RaiseIsHandshakingEvent(true);
 
 		var hostIp = await _handshakeService.Handshake(Apps.WITNESS, CancellationToken.None);
@@ -77,6 +81,7 @@ public class RpcInitalizer : IRpcInitalizer
 		
 		this.context.RaiseIsHandshakingEvent(false);
 		return hostIp.ToString();
+#endif
 	}
 
 	private void ToastError(Exception exception)
