@@ -12,11 +12,14 @@
 	<div class="col">
 		<button class="btn btn-primary" @onclick="_ => this.StartlistService.SelectList()">All</button>
 	</div>
-	@foreach (var (stage, list) in this.StartlistService.StartlistsByStage)
+	@lock(StartlistService.Startlist)
 	{
-		<div class="col">
-			<button class="btn btn-primary" @onclick="_ => this.StartlistService.SelectList(stage)">@stage</button>
-		</div>
+		foreach (var (stage, list) in this.StartlistService.StartlistsByStage)
+		{
+			<div class="col">
+				<button class="btn btn-primary" @onclick="_ => this.StartlistService.SelectList(stage)">@stage</button>
+			</div>
+		}
 	}
 </div>
 <div class="row">

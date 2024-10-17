@@ -206,7 +206,7 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
     private void RaiseDisconnected(Exception? ex = default)
     {
         ServerConnectionChanged?.Invoke(_name, RpcConnectionStatus.Disconnected);
-        ServerConnectionInfo?.Invoke(_name, ex?.Message ?? "Disconnected manually");
+        //ServerConnectionInfo?.Invoke(_name, ex?.Message ?? "Disconnected manually");
     }
 
     private void RaiseReconnecting(Exception ex)

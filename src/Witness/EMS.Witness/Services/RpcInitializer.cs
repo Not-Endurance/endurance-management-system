@@ -3,12 +3,13 @@ using Core.Application.Services;
 using Core.ConventionalServices;
 using EMS.Witness.Platforms.Services;
 using EMS.Witness.Shared.Toasts;
-using static Core.Application.CoreApplicationConstants;
 
 namespace EMS.Witness.Services;
 
-public class RpcInitalizer : IRpcInitalizer
+public class RpcInitializer : IRpcInitalizer
 {
+	public const string ANDROID_EMULATOR_HOST_LOOPBACK = "10.0.0.2";
+
     private readonly IToaster toaster;
 	private readonly IWitnessState _witnessState;
 	private readonly IHandshakeService _handshakeService;
@@ -16,7 +17,7 @@ public class RpcInitalizer : IRpcInitalizer
 	private readonly IPermissionsService permissionsService;
 	private readonly WitnessContext context;
 	
-	public RpcInitalizer(
+	public RpcInitializer(
 		IWitnessState witnessState,
         IHandshakeService handshakeService,
         IWitnessContext context,
@@ -66,6 +67,10 @@ public class RpcInitalizer : IRpcInitalizer
 
 	private async Task<string> Handshake()
 	{
+#if DEBUG
+		return ANDROID_EMULATOR_HOST_LOOPBACK;
+#else
+
 		this.context.RaiseIsHandshakingEvent(true);
 
 		var hostIp = await _handshakeService.Handshake(Apps.WITNESS, CancellationToken.None);
@@ -77,6 +82,7 @@ public class RpcInitalizer : IRpcInitalizer
 		
 		this.context.RaiseIsHandshakingEvent(false);
 		return hostIp.ToString();
+#endif
 	}
 
 	private void ToastError(Exception exception)

@@ -62,8 +62,11 @@ public class ParticipantsService : IParticipantsService
             {
                 return;
             }
-			this.Participants.Clear();
-			this.Participants.AddRange(participants!);
+            lock (Participants)
+            {
+                this.Participants.Clear();
+                this.Participants.AddRange(participants!);
+            }
             if (!state.EventId.HasValue)
             {
                 state.EventId = eventId;
