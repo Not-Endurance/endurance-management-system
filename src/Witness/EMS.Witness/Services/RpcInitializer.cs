@@ -9,7 +9,7 @@ namespace EMS.Witness.Services;
 
 public class RpcInitializer : IRpcInitalizer
 {
-	public const string ANDROID_EMULATOR_HOST_LOOPBACK = "10.0.0.2";
+	public const string ANDROID_EMULATOR_HOST_LOOPBACK = "10.0.2.2";
 
     private readonly IToaster toaster;
 	private readonly IWitnessState _witnessState;
@@ -74,7 +74,7 @@ public class RpcInitializer : IRpcInitalizer
 
 		this.context.RaiseIsHandshakingEvent(true);
 
-		var hostIp = await _handshakeService.Handshake(CoreApplicationConstants.Apps.WITNESS, CancellationToken.None);
+		var hostIp = await _handshakeService.Handshake(CoreApplicationConstantsApps.WITNESS, CancellationToken.None);
 		if (hostIp == null)
 		{
 			this.context.RaiseIsHandshakingEvent(false);
