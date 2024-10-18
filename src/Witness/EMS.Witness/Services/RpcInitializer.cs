@@ -74,7 +74,7 @@ public class RpcInitializer : IRpcInitalizer
 
 		this.context.RaiseIsHandshakingEvent(true);
 
-		var hostIp = await _handshakeService.Handshake(CoreApplicationConstantsApps.WITNESS, CancellationToken.None);
+		var hostIp = await _handshakeService.Handshake(CoreApplicationConstants.Apps.WITNESS, CancellationToken.None);
 		if (hostIp == null)
 		{
 			this.context.RaiseIsHandshakingEvent(false);
