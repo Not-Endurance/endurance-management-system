@@ -16,7 +16,7 @@ public class Toast
     public string Title { get; }
     public string Message { get; }
     public UiColor Color { get; }
-    public DateTimeOffset TimeToBurn { get; }
+    public DateTimeOffset TimeToBurn { get; private set; }
     
     public bool IsBurnt
         => TimeToBurn < DateTimeOffset.Now;
@@ -25,6 +25,11 @@ public class Toast
 
     private TimeSpan ElapsedTime
         => this.posted - DateTimeOffset.Now;
+
+    public void ScorchIt()
+    {
+        TimeToBurn = DateTimeOffset.Now;
+    }
 }
 public enum UiColor
 {
