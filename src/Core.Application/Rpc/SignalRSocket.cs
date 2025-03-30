@@ -15,8 +15,6 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
     public event EventHandler<string>? ServerConnectionInfo;
     public event EventHandler<RpcError>? Error;
     private System.Timers.Timer? _reconnectionTimer;
-    private int _connectionClosedReconnectAttempts;
-
 
     public bool IsConnected => this.Connection?.State == HubConnectionState.Connected;
 
@@ -134,9 +132,6 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
             return Task.CompletedTask;
         }
         RaiseDisconnected(exception);
-        // This check is also necessary here, because if the server hub cannot be constructed (DI error for example)
-        // SignalR keeps closing each connection to that hub as soon as it is created
-        // Maybe test again with static connection?
 
         return Task.CompletedTask;
     }
@@ -158,7 +153,6 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
     private void RaiseDisconnected(Exception? ex = default)
     {
         ServerConnectionChanged?.Invoke(_name, RpcConnectionStatus.Disconnected);
-        //ServerConnectionInfo?.Invoke(_name, ex?.Message ?? "Disconnected manually");
     }
 
     private void RaiseReconnecting(Exception ex)
