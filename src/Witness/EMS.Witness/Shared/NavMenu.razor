@@ -25,7 +25,7 @@
 		@if (this.rpcConnectionStatus == RpcConnectionStatus.Connected)
 		{
 			<div class="col-3">
-				<a class="navbar-brand" href="">Witness 5 (NTS)</a>
+				<a class="navbar-brand" href="">Witness 5.1 (NTS)</a>
 			</div>
 		}
 		@if (!isHandshaking && rpcConnectionStatus == RpcConnectionStatus.Disconnected)
@@ -115,6 +115,22 @@
 	{
 		if (this.rpcConnectionStatus != status)
 		{
+			if (status == RpcConnectionStatus.Connected)
+			{
+				var freshToast = _toaster.GetLatestToast();
+				if (freshToast != null && freshToast.Title.Contains("Disconnected"))
+				{
+					_toaster.ClearToast(freshToast);
+				}
+			} 
+			else if (!isHandshaking && status == RpcConnectionStatus.Disconnected)
+			{
+				_toaster.Add(
+					"Disconnected from server",
+					"Make sure you are connected to the correct WiFi network and device is in range",
+					UiColor.Warning,
+					30);
+			}
 			this.rpcConnectionStatus = status;
 			await this.InvokeAsync(this.StateHasChanged);
 		}
@@ -122,7 +138,20 @@
 
 	private void HandleServerConnectionInfo(object? senderName, string message)
 	{
-		_toaster.Add(senderName!.ToString()!, message, UiColor.Warning, 10);
+		var isDisconnectMessage = message.Contains("SignalR automatic reconnecting:");
+		var isReconnectMessage = message.Contains("SignalR automatic reconnected:");
+		if (isDisconnectMessage)
+		{
+			_toaster.Add(
+				"Disconnected from server",
+				"Make sure you are connected to the correct WiFi network and device is in range",
+				UiColor.Warning,
+				30);
+		}
+		else if(!isReconnectMessage)
+		{
+			_toaster.Add(senderName!.ToString()!, message, UiColor.Warning, 10);
+		}
 	}
 
 	private async void HandleIsHandshakingEvent(object? sender, bool isHandshaking)
@@ -136,7 +165,16 @@
 
 	private void HandleRpcErrors(object? sender, RpcError error)
 	{
-		_toaster.Add("RPC client error", $"{error.Procedure}: {error.Exception.Message}", UiColor.Danger, 30);
+		#if DEBUG
+				_toaster.Add("RPC client error", $"{error.Procedure}: {error.Exception.Message}", UiColor.Danger, 10);
+		#else
+				_toaster.Add(
+					"Disconnected from server", 
+					"Make sure you are connected to the correct WiFi network and device is in range",
+					UiColor.Warning,
+					30);
+		#endif
+
 	}
 
 	private void HandleCoreErrors(object? sender, Exception error)
@@ -144,4 +182,3 @@
 		_toaster.Add(error.Message, error.StackTrace, UiColor.Danger, 30);
 	}
 }
-`

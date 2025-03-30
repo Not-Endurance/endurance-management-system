@@ -111,6 +111,7 @@ public class ParticipantsService : IParticipantsService
             var batch = new ParticipantsBatch(type, this.Snapshots);
             this.History.Add(batch);
             this.Snapshots.Clear();
+            this.toaster.Add($"{nameof(this.Send)} Successful", $"Sent '{batch.Participants.Count}' entries", UiColor.Success, 3);
         }
     }
     public async Task Resend(ParticipantsBatch batch, WitnessEventType type)
