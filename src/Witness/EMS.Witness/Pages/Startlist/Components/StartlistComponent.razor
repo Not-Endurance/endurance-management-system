@@ -41,7 +41,7 @@
 					<td>@entry.Number</td>
 					<td>@entry.AthleteName</td>
 					<td>@entry.Stage</td>
-					<td>@entry.Distance</td>
+					<td>@entry.Distance.ToString("#.##")</td>
 					@if (entry.IsRestOver && entry.IsLateStart)
 					{
 						var diff = entry.StartTime - this.DateService.GetNow();
