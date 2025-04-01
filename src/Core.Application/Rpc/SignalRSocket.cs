@@ -1,5 +1,7 @@
 ﻿using Core.ConventionalServices;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
+using Not.Serialization.JSON;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -15,8 +17,6 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
     public event EventHandler<string>? ServerConnectionInfo;
     public event EventHandler<RpcError>? Error;
     private System.Timers.Timer? _reconnectionTimer;
-    private int _connectionClosedReconnectAttempts;
-
 
     public bool IsConnected => this.Connection?.State == HubConnectionState.Connected;
 
@@ -32,7 +32,7 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
     }
 
     // Necessary because this.Connection instance is not intialized 
-    // when procedures are reigstered in the child constructor
+    // when procedures are registered in the child constructor
     internal List<Action<HubConnection>> Procedures { get; } = new();
     internal HubConnection? Connection { get; private set; }
 
@@ -63,7 +63,7 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
         this.Connection.Closed -= HandleClosed;
         await this.Connection.DisposeAsync();
         this.reconnectTokenSource?.Dispose();
-        // Might occasionally tigger ObjectDiscpossedException if timer.Elapsed attempts to run
+        // Might occasionally trigger ObjectDisposedException if timer.Elapsed attempts to run
         // during or after Dispose. See https://codereview.stackexchange.com/questions/223877/safe-dispose-of-timer
         // for potential solutions
         _reconnectionTimer?.Dispose();
@@ -103,7 +103,9 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
     {
         _context.Host = host;
         this.Connection = new HubConnectionBuilder()
+            .AddNewtonsoftJsonProtocol(x => x.PayloadSerializerSettings = new NJsonSettings())
             .WithUrl(this._context.Url)
+            .WithAutomaticReconnect(new AutomaticReconnectSetting())
             .Build();
         this.Connection.Reconnected += HandleReconnected;
         this.Connection.Reconnecting += HandleReconnecting;
@@ -132,61 +134,9 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
         {
             return Task.CompletedTask;
         }
-        // This check is also necessary here, because if the server hub cannot be constructed (DI error for example)
-        // SignalR keeps closing each connection to that hub as soon as it is created
-        // Maybe test again with static connection?
-        if (HasReachedReconnectionAttemptLimit(++_connectionClosedReconnectAttempts))
-        {
-            RaiseDisconnected(exception);
-        }
-        else
-        {
-            BeginReconnecting(this.reconnectTokenSource!.Token, exception, () => { _connectionClosedReconnectAttempts = 0; });
+        RaiseDisconnected(exception);
 
-        }
         return Task.CompletedTask;
-    }
-
-    private void BeginReconnecting(CancellationToken cancellationToken, Exception? error, Action onSuccess)
-    {
-        this.RaiseDisconnected(error);
-        RaiseConnecting();
-        var reconnectAttempts = 0;
-        _reconnectionTimer = new System.Timers.Timer(TimeSpan.FromSeconds(10).TotalMilliseconds);
-        _reconnectionTimer.Elapsed += async (s, e) =>
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                ServerConnectionInfo?.Invoke(this, "Reconecting stopped due to cancelation request");
-                _reconnectionTimer.Stop();
-                _reconnectionTimer.Dispose();
-            }
-            try
-            {
-                await this.Connection!.StartAsync();
-                if (this.Connection.State == HubConnectionState.Connected)
-                {
-                    this.RaiseConnected();
-                    onSuccess();
-                    _reconnectionTimer.Stop();
-                    _reconnectionTimer.Dispose();
-                }
-            }
-            catch (Exception ex)
-            {
-                RaiseReconnecting(ex);
-            }
-            finally
-            {
-                if (HasReachedReconnectionAttemptLimit(++reconnectAttempts))
-                {
-                    RaiseDisconnected(new Exception("Automatic reconnection reached attempt limits. Try to reconnect manually"));
-                    _reconnectionTimer.Stop();
-                    _reconnectionTimer.Dispose();
-                }
-            }
-        };
-        _reconnectionTimer.Start();
     }
 
     private bool HasReachedReconnectionAttemptLimit(int attempts)
@@ -206,23 +156,25 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
     private void RaiseDisconnected(Exception? ex = default)
     {
         ServerConnectionChanged?.Invoke(_name, RpcConnectionStatus.Disconnected);
-        //ServerConnectionInfo?.Invoke(_name, ex?.Message ?? "Disconnected manually");
     }
 
     private void RaiseReconnecting(Exception ex)
     {
-        ServerConnectionChanged?.Invoke(_name, RpcConnectionStatus.Connecting);
-        ServerConnectionInfo?.Invoke(_name, $"{ex.Message}. Attempting to reconnect");
+        ServerConnectionChanged?.Invoke(_name, RpcConnectionStatus.Reconnecting);
+        ServerConnectionInfo?.Invoke(_name, $"{ex.Message} Attempting to reconnect");
     }
+
     private void RaiseReconnecting(string message)
     {
-        ServerConnectionChanged?.Invoke(_name, RpcConnectionStatus.Connecting);
-        ServerConnectionInfo?.Invoke(_name, $"{message}. Attempting to reconnect");
+        ServerConnectionChanged?.Invoke(_name, RpcConnectionStatus.Reconnecting);
+        ServerConnectionInfo?.Invoke(_name, $"{message} Attempting to reconnect");
     }
+
     private void RaiseConnecting()
     {
         ServerConnectionChanged?.Invoke(_name, RpcConnectionStatus.Connecting);
     }
+
     private void RaiseConnected(string? message = null)
     {
         ServerConnectionChanged?.Invoke(_name, RpcConnectionStatus.Connected);
@@ -251,4 +203,5 @@ public enum RpcConnectionStatus
     Disconnected = 0,
     Connecting = 1,
     Connected = 2,
+    Reconnecting = 3
 }

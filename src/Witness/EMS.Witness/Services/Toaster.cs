@@ -6,7 +6,7 @@ using System.Timers;
 namespace EMS.Witness.Services;
 public class Toaster : IToaster, INotificationService, IDisposable
 {
-    private readonly List<Toast> toastList = new();
+    private readonly List<Toast> toastList = new List<Toast>() { new Toast("Witness Started", "Application Started", UiColor.Success, 0)  };
     private readonly System.Timers.Timer timer = new();
     private object lockObject = new();
 
@@ -22,12 +22,23 @@ public class Toaster : IToaster, INotificationService, IDisposable
     public event EventHandler? ToasterChanged;
     public event EventHandler? ToasterTimerElapsed;
    
-    public bool HasToasts => toastList.Count > 0;
+    public bool HasToasts => GetLatestToast() != null;
 
     public List<Toast> GetToasts()
     {
         ClearBurntToast();
         return this.toastList.ToList();
+    }
+
+    public Toast? GetLatestToast()
+    {
+        var lastFreshToast = toastList.LastOrDefault(m => !m.IsBurnt);
+        return lastFreshToast;
+    }
+
+    public List<Toast> GetEntireBread()
+    {
+        return toastList;
     }
 
     public void Add(string header, string? message, UiColor color, int seconds = 11)
@@ -40,7 +51,9 @@ public class Toaster : IToaster, INotificationService, IDisposable
     {
         lock (lockObject)
         {
-            this.toastList.Add(toast);
+            var lastToast = toastList.Last();
+            if (lastToast != null) lastToast.ScorchIt();
+            toastList.Add(toast);
             if (!this.ClearBurntToast())
             {
                 this.ToasterChanged?.Invoke(this, EventArgs.Empty);
@@ -52,7 +65,7 @@ public class Toaster : IToaster, INotificationService, IDisposable
     {
         if (this.toastList.Contains(toast))
         {
-            this.toastList.Remove(toast);
+            toast.ScorchIt();
             if (!this.ClearBurntToast())
             {
                 this.ToasterChanged?.Invoke(this, EventArgs.Empty);
@@ -85,8 +98,6 @@ public class Toaster : IToaster, INotificationService, IDisposable
         {
             return false;
         }
-
-        toastsToDelete.ForEach(toast => this.toastList.Remove(toast));
 		
 		this.ToasterChanged?.Invoke(this, EventArgs.Empty);
         return true;
@@ -106,6 +117,7 @@ public class Toaster : IToaster, INotificationService, IDisposable
 
 public interface IToaster
 {
+    Toast? GetLatestToast();
     void Add(string header, string? message, UiColor color, int seconds = 10);
 	List<Toast> GetToasts();
     void ClearToast(Toast toast);

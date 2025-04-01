@@ -7,7 +7,7 @@ public static class CoreApplicationConstants
 {
     public const int NETWORK_API_PORT = 11337;
     public const int NETWORK_BROADCAST_PORT = 21337;
-    public const string RPC_ENDPOINT = "judge-hub";
+    public const string RPC_ENDPOINT = "witness-hub";
     public const int RPC_PORT = 11337;
 
     public static class Apps

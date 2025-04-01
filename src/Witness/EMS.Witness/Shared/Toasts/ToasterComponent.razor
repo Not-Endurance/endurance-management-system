@@ -5,8 +5,8 @@
 {
     <div class="">
         <div class="toast-container position-absolute top-0 end-0 mt-5 pt-5 pe-2">
-            @foreach (var toast in this.Toaster.GetToasts())
-            {
+            @{
+                var toast = this.Toaster.GetLatestToast();
                 var toastClass = this.GetToastClass(toast);
                 <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
                     <div class="toast-header @toastClass">
