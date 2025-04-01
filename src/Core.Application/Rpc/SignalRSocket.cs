@@ -1,5 +1,7 @@
 ﻿using Core.ConventionalServices;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
+using Not.Serialization.JSON;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -101,6 +103,7 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
     {
         _context.Host = host;
         this.Connection = new HubConnectionBuilder()
+            .AddNewtonsoftJsonProtocol(x => x.PayloadSerializerSettings = new NJsonSettings())
             .WithUrl(this._context.Url)
             .WithAutomaticReconnect(new AutomaticReconnectSetting())
             .Build();
