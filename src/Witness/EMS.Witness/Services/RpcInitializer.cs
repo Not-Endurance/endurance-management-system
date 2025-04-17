@@ -12,13 +12,15 @@ public class RpcInitializer : IRpcInitalizer
 	public const string ANDROID_EMULATOR_HOST_LOOPBACK = "10.0.2.2";
 
     private readonly IToaster toaster;
-	private readonly IWitnessState _witnessState;
+    private readonly IRpcContext _rpcContext;
+    private readonly IWitnessState _witnessState;
 	private readonly IHandshakeService _handshakeService;
     private readonly IRpcSocket _rpcSocket;
 	private readonly IPermissionsService permissionsService;
 	private readonly WitnessContext context;
 	
 	public RpcInitializer(
+		IRpcContext rpcContext,
 		IWitnessState witnessState,
         IHandshakeService handshakeService,
         IWitnessContext context,
@@ -27,7 +29,8 @@ public class RpcInitializer : IRpcInitalizer
 		IToaster toaster)
     {
 		this.context = (WitnessContext)context;
-		_witnessState = witnessState;
+        _rpcContext = rpcContext;
+        _witnessState = witnessState;
 		_handshakeService = handshakeService;
         _rpcSocket = rpcSocket;
 		this.permissionsService = permissionsService;
@@ -57,7 +60,16 @@ public class RpcInitializer : IRpcInitalizer
 				return;
 			}
 
-			var host = _witnessState.HostIp ??= await Handshake();
+			string? host = null;
+			if (_witnessState.HostIp != null)
+			{
+				host = _witnessState.HostIp;
+			}
+			else if (_rpcContext.UseLocalHost)
+			{
+				host = await Handshake();
+			}
+
             await _rpcSocket.Connect(host);
 		}
 		catch (Exception exception)

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using static Core.Application.CoreApplicationConstants;
 
 namespace Core.Application.Rpc;
 
@@ -20,14 +19,14 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
 
     public bool IsConnected => this.Connection?.State == HubConnectionState.Connected;
 
-    private readonly RpcContext _context;
+    private readonly IRpcContext _context;
 
     private CancellationTokenSource? reconnectTokenSource;
     private readonly string _name;
 
-    public SignalRSocket()
+    public SignalRSocket(IRpcContext context)
     {
-        _context = new RpcContext(RpcProtocls.Http, RPC_PORT, RPC_ENDPOINT);
+        _context = context; ;
         _name = GetType().Name;
     }
 
@@ -36,20 +35,24 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
     internal List<Action<HubConnection>> Procedures { get; } = new();
     internal HubConnection? Connection { get; private set; }
 
-    public virtual async Task Connect(string host)
+    public virtual async Task Connect(string? localHost)
     {
-        await InternalConnect(host, 0);
+        if (localHost != null)
+        {
+			_context.LocalHost = localHost;
+		}
+		await InternalConnect(0);
     }
 
     public virtual async Task Disconnect()
     {
-        if (this.Connection == null || !this.IsConnected)
-        {
-            return;
-        }
         this.reconnectTokenSource!.Cancel();
-        await this.Connection.StopAsync();
-        RaiseDisconnected();
+        if (Connection != null)
+        {
+			await this.Connection.StopAsync();
+			Connection = null;
+		}
+		RaiseDisconnected();
     }
 
     public async ValueTask DisposeAsync()
@@ -69,7 +72,7 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
         _reconnectionTimer?.Dispose();
     }
 
-    private async Task InternalConnect(string host, int reconnectAttempts)
+    private async Task InternalConnect(int reconnectAttempts)
     {
         if (IsConnected)
         {
@@ -78,7 +81,7 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
         }
         if (this.Connection == null)
         {
-            this.ConfigureConnection(host);
+            this.ConfigureConnection();
         }
         try
         {
@@ -95,16 +98,16 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
                 return;
             }
             await Task.Delay(TimeSpan.FromSeconds(5));
-            await InternalConnect(host, reconnectAttempts);
+            await InternalConnect(reconnectAttempts);
         }
     }
 
-    private void ConfigureConnection(string host)
+    private void ConfigureConnection()
     {
-        _context.Host = host;
-        this.Connection = new HubConnectionBuilder()
+        var url = this._context.Url;
+		this.Connection = new HubConnectionBuilder()
             .AddNewtonsoftJsonProtocol(x => x.PayloadSerializerSettings = new NJsonSettings())
-            .WithUrl(this._context.Url)
+            .WithUrl(url)
             .WithAutomaticReconnect(new AutomaticReconnectSetting())
             .Build();
         this.Connection.Reconnected += HandleReconnected;
