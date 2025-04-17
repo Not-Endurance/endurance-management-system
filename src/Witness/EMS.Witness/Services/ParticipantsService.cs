@@ -135,8 +135,16 @@ public class ParticipantsService : IParticipantsService
     {
         this.Selected.Remove(entry);
 
-        entry.ArriveTime = DateTime.Now;
-        var existing = this.Snapshots.FirstOrDefault(x => x == entry);
+        entry = new ParticipantEntry
+        {
+            ArriveTime = DateTime.Now,
+            LapDistance = entry.LapDistance,
+            LapNumber = entry.LapNumber,
+            Name = entry.Name,
+            Number = entry.Number,
+        };
+
+        var existing = this.Snapshots.FirstOrDefault(x => x.Number == entry.Number);
         if (existing != null)
         {
             this.Snapshots.Remove(existing);
