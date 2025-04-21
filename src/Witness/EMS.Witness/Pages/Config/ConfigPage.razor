@@ -114,7 +114,7 @@
 		_witnessState.EventId = upcomingEvent.Id;
 		_witnessState.EventName = upcomingEvent.Name;
 		await NavMenu.StartRpcConnections(_rpcInitializer, _witnessState);
-		await _persistence.RestoreIfAny(upcomingEvent.Id);
+		await _persistence.RestoreIfAny(upcomingEvent.Id, upcomingEvent.Name);
 	}
 
 	private IEnumerable<ParticipantEntry> LoadParticipants(UpcomingEvent upcomingEvent)
