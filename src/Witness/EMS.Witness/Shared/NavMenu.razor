@@ -91,13 +91,13 @@
 		_rpcSocket.ServerConnectionChanged += HandleServerConnectionChanged;
 		_rpcSocket.ServerConnectionInfo += HandleServerConnectionInfo;
 		this.Context.IsHandshakingEvent += HandleIsHandshakingEvent;
-		await StartRpcConnections(_rpcInitializer);
+		// await StartRpcConnections(_rpcInitializer);
 	}
 
 	private static bool isConnecting;
-	public static async Task StartRpcConnections(IRpcInitalizer rpcInitalizer)
+	public static async Task StartRpcConnections(IRpcInitalizer rpcInitalizer, IWitnessState state)
 	{
-		if (isConnecting)
+		if (isConnecting || state.EventId == null)
 		{
 			return;
 		}

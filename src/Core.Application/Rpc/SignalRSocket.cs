@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Core.Application.Rpc;
 
@@ -18,12 +19,14 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
     public bool IsConnected => this.Connection?.State == HubConnectionState.Connected;
 
     private readonly IRpcContext _context;
+    private readonly IRpcMetadata _metadata;
 
     private readonly string _name;
 
-    public SignalRSocket(IRpcContext context)
+    public SignalRSocket(IRpcContext context, IRpcMetadata metadata)
     {
-        _context = context; ;
+        _context = context;
+        _metadata = metadata;
         _name = GetType().Name;
     }
 
@@ -100,7 +103,13 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
 
     private void ConfigureConnection()
     {
-        var url = this._context.Url;
+        var query = new Dictionary<string, string?>();
+        if (_metadata.ConnectionGroupKey != null)
+        {
+            query.Add("connectionGroup", _metadata.ConnectionGroupKey);
+        }
+
+        var url = QueryHelpers.AddQueryString(_context.Url, query);
 		this.Connection = new HubConnectionBuilder()
             .AddNewtonsoftJsonProtocol(x => x.PayloadSerializerSettings = new NJsonSettings())
             .WithUrl(url)

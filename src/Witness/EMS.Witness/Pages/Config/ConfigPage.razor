@@ -59,8 +59,12 @@
 	private IRpcContext RpcContext { get; set; } = default!;
 	[Inject]
 	private IRpcInitalizer _rpcInitializer { get; set; } = default!;
+
+	[Inject] private WitnessState _witnessState { get; set; } = default!;
 	[Inject]
 	private IUpcomingEventRepository _repository { get; set; } = default!;
+
+	[Inject] private IPersistenceService _persistence { get; set; } = default!;
 
 	private IEnumerable<UpcomingEvent> _upcomingEvents = [];
 
@@ -76,9 +80,11 @@
 		_upcomingEvents = await _repository.ReadAll();
 	}
 
-	private Task Connect(UpcomingEvent upcomingEvent)
+	private async Task Connect(UpcomingEvent upcomingEvent)
 	{
-		return Task.CompletedTask;
+		_witnessState.EventId = upcomingEvent.Id;
+		await NavMenu.StartRpcConnections(_rpcInitializer, _witnessState);
+		await _persistence.RestoreIfAny(upcomingEvent.Id);
 	}
 
 	private IEnumerable<ParticipantEntry> LoadParticipants(UpcomingEvent upcomingEvent)

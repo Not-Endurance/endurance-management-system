@@ -17,6 +17,8 @@ public class LoggingClient : IWitnessLogger
 
 	public async Task Log(string functionality, Exception exception)
 	{
+        // TODO: Add procedure to log the error on the server
+        return;
 		if (_state.HostIp == null)
 		{
 			return;

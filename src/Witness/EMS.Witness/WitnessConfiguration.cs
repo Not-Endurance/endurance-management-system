@@ -46,6 +46,7 @@ public static class WitnessConfiguration
             .AddSingleton<IRpcContext>(rpcContext)
             .AddTransient<IUpcomingEventRepository, UpcomingEventHttpRepository>()
             .AddTransient<NHttpClient>()
+            .AddSingleton<IRpcMetadata>(x => x.GetRequiredService<WitnessState>())
             .AddHttpClient();
 
         return services;

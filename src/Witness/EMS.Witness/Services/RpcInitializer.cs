@@ -59,7 +59,6 @@ public class RpcInitializer : IRpcInitalizer
 			{
 				return;
 			}
-
 			string? host = null;
 			if (_witnessState.HostIp != null)
 			{

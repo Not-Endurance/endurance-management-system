@@ -28,7 +28,7 @@ public class PersistenceService : IPersistenceService
 			}
 			var contents = await File.ReadAllTextAsync(path);
 			var state = this.jsonSerializer.Deserialize<WitnessState>(contents);
-            if (state.EventId != eventId)
+            if (state.EventId != eventId) // TODO: remove delete and use different paths for selected events
             {
                 File.Delete(path);
                 return;
@@ -50,7 +50,8 @@ public class PersistenceService : IPersistenceService
 		}
         catch (Exception ex)
         {
-            await _witnessLogger.Log("StoreState", ex);
+            await _witnessLogger.
+                Log("StoreState", ex);
         }
     }
 }

@@ -11,7 +11,8 @@ namespace EMS.Witness;
 
 public partial class App : Application
 {
-	private readonly IRpcInitalizer _rpcInitalizer;
+    private readonly IWitnessState _state;
+    private readonly IRpcInitalizer _rpcInitalizer;
 	private readonly IRpcSocket _rpcSocket;
     private readonly IPersistenceService _persistence;
     private readonly IStartlistClient startlistClient;
@@ -20,6 +21,7 @@ public partial class App : Application
     private readonly IParticipantsService participantsService;
 
     public App(
+        IWitnessState state,
 		IRpcInitalizer rpcInitalizer,
 		IRpcSocket rpcSocket,
 		IPersistenceService persistence,
@@ -30,7 +32,8 @@ public partial class App : Application
 	{
 		this.InitializeComponent();
         this.MainPage = new MainPage();
-		_rpcInitalizer = rpcInitalizer;
+        _state = state;
+        _rpcInitalizer = rpcInitalizer;
 		_rpcSocket = rpcSocket;
         _persistence = persistence;
         this.startlistClient = startlistClient;
@@ -56,18 +59,18 @@ public partial class App : Application
 	private async void OnResumed(object? sender, EventArgs args)
 	{
 		await Task.Delay(TimeSpan.FromSeconds(1));
-		await NavMenu.StartRpcConnections(_rpcInitalizer);
+		await NavMenu.StartRpcConnections(_rpcInitalizer, _state);
 	}
-
-	async void Refresh(object? _, ElapsedEventArgs __)
-	{
-		if (!_rpcSocket.IsConnected)
-		{
-			return;
-		}
-		await participantsService.Load();
-		await startlistService.Load();
-	}
+	//
+	// async void Refresh(object? _, ElapsedEventArgs __)
+	// {
+	// 	if (!_rpcSocket.IsConnected)
+	// 	{
+	// 		return;
+	// 	}
+	// 	await participantsService.Load();
+	// 	await startlistService.Load();
+	// }
 
 	private async void OnDeactivated(object? sender, EventArgs args)
 	{

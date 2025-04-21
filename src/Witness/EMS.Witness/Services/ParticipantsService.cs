@@ -67,11 +67,6 @@ public class ParticipantsService : IParticipantsService
                 this.Participants.Clear();
                 this.Participants.AddRange(participants!);
             }
-            if (!state.EventId.HasValue)
-            {
-                state.EventId = eventId;
-                await _persistence.RestoreIfAny(eventId);
-            }
 		}
     }
 

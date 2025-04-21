@@ -1,9 +1,10 @@
-﻿using Core.Domain.AggregateRoots.Manager.Aggregates.Participants;
+﻿using Core.Application.Rpc;
+using Core.Domain.AggregateRoots.Manager.Aggregates.Participants;
 using Core.Models;
 
 namespace EMS.Witness.Services;
 
-public class WitnessState : IWitnessState
+public class WitnessState : IWitnessState, IRpcMetadata
 {
     public static event EventHandler<EventArgs>? StateLoaded;
     public ObservableCollection<ParticipantEntry> ParticipantSnapshots { get; private set; } = new();
@@ -19,6 +20,8 @@ public class WitnessState : IWitnessState
         this.ParticipantHistory = state.ParticipantHistory;
         StateLoaded?.Invoke(this, new EventArgs());
     }
+
+    public string? ConnectionGroupKey => EventId?.ToString();
 }
 
 public interface IWitnessState
