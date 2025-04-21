@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Core.Application.Rpc.Procedures;
 
-public interface IParticipantstHubProcedures
+public interface IParticipantsHubProcedures
 {
-	ParticipantsPayload SendParticipants();
+    Task<IEnumerable<ParticipantEntry>> SendParticipants();
     Task ReceiveWitnessEvent(IEnumerable<ParticipantEntry> entries, WitnessEventType type);
 }
 

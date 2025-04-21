@@ -1,5 +1,4 @@
-﻿using Core.Application.Services;
-using Core.ConventionalServices;
+﻿using Core.ConventionalServices;
 using Core.Domain.AggregateRoots.Manager;
 using Core.Domain.AggregateRoots.Manager.Aggregates.Participants;
 using Core.Enums;
@@ -11,27 +10,21 @@ namespace EMS.Witness.Services;
 
 public class ParticipantsService : IParticipantsService
 {
-	private readonly IPersistenceService _persistence;
 	private readonly IWitnessState state;
     private readonly IWitnessContext context;
     private readonly IParticipantsClient participantsClient;
     private readonly IToaster toaster;
-    private readonly IDateService dateService;
 
     public ParticipantsService(
-        IPersistenceService persistence,
         IWitnessState state,
         IWitnessContext context,
         IParticipantsClient arrivelistClient,
-        IToaster toaster,
-        IDateService dateService)
+        IToaster toaster)
     {
-		_persistence = persistence;
 		this.state = state;
         this.context = context;
         this.participantsClient = arrivelistClient;
         this.toaster = toaster;
-        this.dateService = dateService;
     }
 
     public SortedCollection<ParticipantEntry> Participants => this.context.Participants;
@@ -56,16 +49,14 @@ public class ParticipantsService : IParticipantsService
         if (result.IsSuccessful)
         {
             //var (eventId, participants) = result.Data;
-            var eventId = result.Data!.EventId;
-            var participants = result.Data.Participants;
-            if (eventId == default || participants == default)
+            if (result.Data == null || !result.Data.Any())
             {
                 return;
             }
             lock (Participants)
             {
                 this.Participants.Clear();
-                this.Participants.AddRange(participants!);
+                this.Participants.AddRange(result.Data);
             }
 		}
     }

@@ -32,15 +32,15 @@ public class ParticipantsClient : RpcClient, IParticipantsClient, IParticipantsC
         return Task.CompletedTask;
     }
 
-    public async Task<RpcInvokeResult<ParticipantsPayload>> Load()
+    public async Task<RpcInvokeResult<IEnumerable<ParticipantEntry>>> Load()
 	{
         if (_witnessState.EventId == null)
         {
             _toaster.Add("Not connected", "Connect to an event from Config page", UiColor.Warning, 20);
-            return RpcInvokeResult<ParticipantsPayload>.Error;
+            return RpcInvokeResult<IEnumerable<ParticipantEntry>>.Error;
         }
         var request = WarpRequest.Create(_witnessState.EventId.ToString()!);
-		return await InvokeInputOutputProcedure<WarpRequest, ParticipantsPayload>(nameof(IParticipantstHubProcedures.SendParticipants), request);
+		return await InvokeInputOutputProcedure<WarpRequest, IEnumerable<ParticipantEntry>>(nameof(IParticipantsHubProcedures.SendParticipants), request);
 	}
 
     public async Task<RpcInvokeResult> Send(IEnumerable<ParticipantEntry> entries, WitnessEventType type)
@@ -53,13 +53,13 @@ public class ParticipantsClient : RpcClient, IParticipantsClient, IParticipantsC
 
         var payload = new ProcessSnapshotsPayload { Entries = entries, Type = type };
         var request = WarpRequest.Create(_witnessState.EventId.ToString()!, payload);
-		return await InvokeInputProcedure(nameof(IParticipantstHubProcedures.ReceiveWitnessEvent), request);
+		return await InvokeInputProcedure(nameof(IParticipantsHubProcedures.ReceiveWitnessEvent), request);
     }
 }
 
 public interface IParticipantsClient
 {
 	event EventHandler<(ParticipantEntry entry, CollectionAction action)>? Updated;
-	Task<RpcInvokeResult<ParticipantsPayload>> Load();
+	Task<RpcInvokeResult<IEnumerable<ParticipantEntry>>> Load();
 	Task<RpcInvokeResult> Send(IEnumerable<ParticipantEntry> entries, WitnessEventType type);
 }
