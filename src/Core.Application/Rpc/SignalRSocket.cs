@@ -15,13 +15,10 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
     public event EventHandler<RpcConnectionStatus>? ServerConnectionChanged;
     public event EventHandler<string>? ServerConnectionInfo;
     public event EventHandler<RpcError>? Error;
-    private System.Timers.Timer? _reconnectionTimer;
-
     public bool IsConnected => this.Connection?.State == HubConnectionState.Connected;
 
     private readonly IRpcContext _context;
 
-    private CancellationTokenSource? reconnectTokenSource;
     private readonly string _name;
 
     public SignalRSocket(IRpcContext context)
@@ -46,7 +43,6 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
 
     public virtual async Task Disconnect()
     {
-        this.reconnectTokenSource!.Cancel();
         if (Connection != null)
         {
 			await this.Connection.StopAsync();
@@ -65,11 +61,9 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
         this.Connection.Reconnecting -= HandleReconnecting;
         this.Connection.Closed -= HandleClosed;
         await this.Connection.DisposeAsync();
-        this.reconnectTokenSource?.Dispose();
         // Might occasionally trigger ObjectDisposedException if timer.Elapsed attempts to run
         // during or after Dispose. See https://codereview.stackexchange.com/questions/223877/safe-dispose-of-timer
         // for potential solutions
-        _reconnectionTimer?.Dispose();
     }
 
     private async Task InternalConnect(int reconnectAttempts)
@@ -79,16 +73,18 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
             ServerConnectionInfo?.Invoke(this, $"{this.GetType().Name} is already connected");
             return;
         }
-        if (this.Connection == null)
-        {
-            this.ConfigureConnection();
-        }
         try
         {
-            this.reconnectTokenSource = new CancellationTokenSource();
+            if (this.Connection == null)
+            {
+                this.ConfigureConnection();
+            }
             RaiseConnecting();
             await this.Connection!.StartAsync();
-            this.RaiseConnected();
+            if (IsConnected)
+            {
+                this.RaiseConnected();
+            }
         }
         catch (Exception ex)
         {
@@ -119,24 +115,20 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
         }
     }
 
-    private Task HandleReconnected(string connectionId)
+    private Task HandleReconnected(string? connectionId)
     {
         RaiseConnected($"SignalR automatic reconnected: {connectionId}");
         return Task.CompletedTask;
     }
 
-    private Task HandleReconnecting(Exception exception)
+    private Task HandleReconnecting(Exception? exception)
     {
-        RaiseReconnecting($"SignalR automatic reconnecting: {exception.Message}");
+        RaiseReconnecting($"SignalR automatic reconnecting: {exception?.Message}");
         return Task.CompletedTask;
     }
 
-    private Task HandleClosed(Exception exception)
+    private Task HandleClosed(Exception? exception)
     {
-        if (reconnectTokenSource?.IsCancellationRequested ?? true)
-        {
-            return Task.CompletedTask;
-        }
         RaiseDisconnected(exception);
 
         return Task.CompletedTask;
