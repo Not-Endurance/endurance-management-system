@@ -1,23 +1,81 @@
 ﻿@using Core.Application.Rpc
+@using EMS.Witness.Models
 @using EMS.Witness.Services
 
 @page "/config"
+<p><strong>Connect to event:</strong></p>
 
+<div class="row">
+	<table class="table">
+		<thead>
+		<tr>
+			<th>Place</th>
+			<th>Name</th>
+			<th>Action</th>
+		</tr>
+		</thead>
+		<tbody>
+		@foreach (var upcomingEvent in _upcomingEvents)
+		{
+			<tr>
+				<td>
+					<span>@upcomingEvent.Place</span>
+				</td>
+				<td>
+					<span>@upcomingEvent.Name</span>
+				</td>
+				<td>
+					<button class="btn btn-success btn-table" @onclick="_ => Connect(upcomingEvent)">Connect</button>
+				</td>
+			</tr>
+		}
+		</tbody>
+	</table>
+</div>
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+
+<p><strong>*Don't use this option unless you know what you're doing</strong></p>
 <label>
-    <input class="oi" type="checkbox" checked="@RpcContext.UseLocalHost" @oninput="ChangeRpcConnection" />
-    Use Local server
+	<input class="oi" type="checkbox" checked="@RpcContext.UseLocalHost" @oninput="ChangeRpcConnection" />
+	Use Local server
 </label>
+
 
 @code {
 	[Inject]
 	private IRpcContext RpcContext { get; set; } = default!;
 	[Inject]
 	private IRpcInitalizer _rpcInitializer { get; set; } = default!;
+	[Inject]
+	private IUpcomingEventRepository _repository { get; set; } = default!;
+
+	private IEnumerable<UpcomingEvent> _upcomingEvents = [];
 
 	private async Task ChangeRpcConnection(ChangeEventArgs e)
 	{
 		RpcContext.UseLocalHost = (bool)e.Value!;
 		await _rpcInitializer.Disconnect();
 		await _rpcInitializer.StartConnections();
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		_upcomingEvents = await _repository.ReadAll();
+	}
+
+	private Task Connect(UpcomingEvent upcomingEvent)
+	{
+		return Task.CompletedTask;
 	}
 }

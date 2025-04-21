@@ -44,6 +44,8 @@ public static class WitnessConfiguration
             .AddSingleton<LoggingClient>()
             .AddSingleton<IWitnessLogger, LoggingClient>()
             .AddSingleton<IRpcContext>(rpcContext)
+            .AddTransient<IUpcomingEventRepository, UpcomingEventHttpRepository>()
+            .AddTransient<NHttpClient>()
             .AddHttpClient();
 
         return services;
