@@ -51,7 +51,7 @@ public class ParticipantsClient : RpcClient, IParticipantsClient, IParticipantsC
             return RpcInvokeResult.Error;
         }
 
-        var payload = new ProcessSnapshotsPayload { Entries = entries, Type = type };
+        var payload = new ProcessSnapshotsPayload { Entries = entries.ToList(), Type = type };
         var request = WarpRequest.Create(_witnessState.EventId.ToString()!, payload);
 		return await InvokeInputProcedure(nameof(IParticipantsHubProcedures.ReceiveWitnessEvent), request);
     }
