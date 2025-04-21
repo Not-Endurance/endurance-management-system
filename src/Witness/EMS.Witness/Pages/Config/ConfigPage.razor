@@ -5,7 +5,7 @@
 @using EMS.Witness.Services
 
 @page "/config"
-<p><strong>Connect to event:</strong></p>
+<a class="navbar-brand" href="">Endurance events</a>
 
 <div class="row">
 	<table class="table">
@@ -17,25 +17,54 @@
 		</tr>
 		</thead>
 		<tbody>
-		@foreach (var upcomingEvent in _upcomingEvents)
+		@if (!_upcomingEvents.Any())
 		{
-			<tr>
-				<td>
-					<span>@upcomingEvent.Place</span>
-				</td>
-				<td>
-					<span>@upcomingEvent.Name</span>
-				</td>
-				<td>
-					<button class="btn btn-success btn-table" @onclick="_ => Connect(upcomingEvent)">Connect</button>
-				</td>
-			</tr>
+			<div class="col-3">
+				<div class="spinner-border text-warning" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
+			</div>
+		}
+		else
+		{
+			foreach (var upcomingEvent in _upcomingEvents)
+			{
+				var isDisabled = _witnessState.EventId == upcomingEvent.Id;
+				var text = isDisabled ? "Connected" : "Connect";
+				<tr>
+					<td>
+						<span>@upcomingEvent.Place</span>
+					</td>
+					<td>
+						<span>@upcomingEvent.Name</span>
+					</td>
+					<td>
+						<button class="btn btn-success btn-table" @onclick="_ => Connect(upcomingEvent)" disabled="@isDisabled">@text</button>
+					</td>
+				</tr>
+			}	
 		}
 		</tbody>
 	</table>
 </div>
 
 <br />
+@if (!RpcSocket.IsConnected && _witnessState.EventId != null && !NavMenu.IsConnecting)
+{
+	<p>This isn't supposed to be visible</p>
+	<button class="btn btn-warning" @onclick="() => NavMenu.StartRpcConnections(_rpcInitializer, _witnessState)">Reconnect</button>
+}
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
 <br />
 <br />
 <br />
@@ -47,7 +76,6 @@
 <br />
 <br />
 
-<p><strong>*Don't use this option unless you know what you're doing</strong></p>
 <label>
 	<input class="oi" type="checkbox" checked="@RpcContext.UseLocalHost" @oninput="ChangeRpcConnection" />
 	Use Local server
@@ -55,6 +83,7 @@
 
 
 @code {
+	[Inject] private IRpcSocket RpcSocket { get; set; } = default!;
 	[Inject]
 	private IRpcContext RpcContext { get; set; } = default!;
 	[Inject]
@@ -83,6 +112,7 @@
 	private async Task Connect(UpcomingEvent upcomingEvent)
 	{
 		_witnessState.EventId = upcomingEvent.Id;
+		_witnessState.EventName = upcomingEvent.Name;
 		await NavMenu.StartRpcConnections(_rpcInitializer, _witnessState);
 		await _persistence.RestoreIfAny(upcomingEvent.Id);
 	}

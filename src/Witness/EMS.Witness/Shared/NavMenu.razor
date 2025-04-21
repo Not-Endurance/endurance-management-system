@@ -1,6 +1,5 @@
 ﻿@using Core.Application.Rpc
 @using EMS.Witness.Services;
-@using EMS.Witness.Rpc;
 
 @implements IDisposable;
 
@@ -25,12 +24,14 @@
 		@if (this.rpcConnectionStatus == RpcConnectionStatus.Connected)
 		{
 			<div class="col-3">
-				<a class="navbar-brand" href="">Witness 5.1 (NTS)</a>
+				<a class="navbar-brand" href="">@(WitnessState.EventName ?? "connected-no-event?")</a>
 			</div>
 		}
-		@if (!isHandshaking && rpcConnectionStatus == RpcConnectionStatus.Disconnected)
+		@if (@* !isHandshaking && *@ rpcConnectionStatus == RpcConnectionStatus.Disconnected)
 		{
-			<button class="btn btn-warning" @onclick="_rpcInitializer.StartConnections">Reconnect</button>
+			<div class="col-3">
+				<a class="navbar-brand" href="">Not connected</a>
+			</div>
 		}
 		<div class="col-3">
 			<button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -61,6 +62,7 @@
 </div>
 
 @code {
+	[Inject] private IWitnessState WitnessState { get; set; } = default!;
 	[Inject]
 	private IWitnessContext Context { get; set; } = default!;
 	[Inject]
@@ -94,16 +96,16 @@
 		// await StartRpcConnections(_rpcInitializer);
 	}
 
-	private static bool isConnecting;
+	public static bool IsConnecting;
 	public static async Task StartRpcConnections(IRpcInitalizer rpcInitalizer, IWitnessState state)
 	{
-		if (isConnecting || state.EventId == null)
+		if (IsConnecting || state.EventId == null)
 		{
 			return;
 		}
-		isConnecting = true;
+		IsConnecting = true;
 		await SafeActionHelper.Act(async () => await rpcInitalizer.StartConnections());
-		isConnecting = false;
+		IsConnecting = false;
 	}
 
 	public void Dispose()
