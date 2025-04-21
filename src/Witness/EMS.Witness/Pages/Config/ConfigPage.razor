@@ -1,0 +1,23 @@
+﻿@using Core.Application.Rpc
+@using EMS.Witness.Services
+
+@page "/config"
+
+<label>
+    <input class="oi" type="checkbox" checked="@RpcContext.UseLocalHost" @oninput="ChangeRpcConnection" />
+    Use Local server
+</label>
+
+@code {
+	[Inject]
+	private IRpcContext RpcContext { get; set; } = default!;
+	[Inject]
+	private IRpcInitalizer _rpcInitializer { get; set; } = default!;
+
+	private async Task ChangeRpcConnection(ChangeEventArgs e)
+	{
+		RpcContext.UseLocalHost = (bool)e.Value!;
+		await _rpcInitializer.Disconnect();
+		await _rpcInitializer.StartConnections();
+	}
+}

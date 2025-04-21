@@ -53,17 +53,14 @@
 			</NavLink>
 		</div>
 		<div class="nav-item px-3">
-			<NavLink class="nav-link">
-				<input class="oi" type="checkbox" checked="@RpcContext.UseLocalHost" @oninput="ChangeRpcConnection" /> <span>Local server</span>
+			<NavLink class="nav-link" href="config">
+				<span class="oi oi-list-rich" aria-hidden="true"></span> Config
 			</NavLink>
-			@* <InputCheckbox DisplayName="Local" Value="RpcContext.UseLocalHost" ValueChanged="ChangeRpcConnection" >Local</InputCheckbox> *@
 		</div>
 	</nav>
 </div>
 
 @code {
-	[Inject]
-	private IRpcContext RpcContext { get; set; } = default!;
 	[Inject]
 	private IWitnessContext Context { get; set; } = default!;
 	[Inject]
@@ -84,14 +81,6 @@
 	{
 		this.CollapseNavMenu = !this.CollapseNavMenu;
 	}
-
-	private async Task ChangeRpcConnection(ChangeEventArgs e)
-	{
-		RpcContext.UseLocalHost = (bool)e.Value!;
-		await _rpcInitializer.Disconnect();
-		await _rpcInitializer.StartConnections();
-	}
-
 	private RpcConnectionStatus rpcConnectionStatus;
 	private bool isHandshaking;
 
