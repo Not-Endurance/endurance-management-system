@@ -12,6 +12,8 @@ if [ -z "$pass" ]; then
   exit 1
 fi
 
+rm -rf bin/$build/$target
+
 target=net8.0-android
 build=Release
 keystore_path=D:/Source/NTS/secrets/Android/EMS.Apps/EMS.Apps.keystore

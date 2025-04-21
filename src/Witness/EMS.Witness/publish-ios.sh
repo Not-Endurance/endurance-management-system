@@ -12,6 +12,8 @@ if [ -z "$mac_pass" ]; then
   exit 1
 fi
 
+rm -rf bin/$build/$target
+
 # Current remote macOS setup is MacinCloud. The following settings have to be updated if anything changes on their end
 # mac_ip
 # mac_user
