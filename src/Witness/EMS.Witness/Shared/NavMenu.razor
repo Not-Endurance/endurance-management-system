@@ -13,7 +13,7 @@
 				</div>
 			</div>
 		}
-		@if (this.rpcConnectionStatus == RpcConnectionStatus.Connecting)
+		else if (this.rpcConnectionStatus == RpcConnectionStatus.Connecting)
 		{
 			<div class="col-3">
 				<div class="spinner-border text-warning" role="status">
@@ -21,13 +21,13 @@
 				</div>
 			</div>
 		}
-		@if (this.rpcConnectionStatus == RpcConnectionStatus.Connected)
+		else if (this.rpcConnectionStatus == RpcConnectionStatus.Connected)
 		{
 			<div class="col-3">
 				<a class="navbar-brand" href="">@(WitnessState.EventName ?? "connected-no-event?")</a>
 			</div>
 		}
-		@if (@* !isHandshaking && *@ rpcConnectionStatus == RpcConnectionStatus.Disconnected)
+		else @*if (@* !isHandshaking && rpcConnectionStatus == RpcConnectionStatus.Disconnected) *@
 		{
 			<div class="col-3">
 				<a class="navbar-brand" href="">Not connected</a>
