@@ -70,8 +70,8 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>S</th>
-                <th>L</th>
+                <th>Lap</th>
+                <th>Len</th>
                 <th>Name</th>
                 <th>Action</th>
             </tr>
@@ -86,8 +86,8 @@
                         <td>
                             <strong>@arrive.Number</strong>
                         </td>
-                        <td>@arrive.LapNumber</td>
-                        <td>@arrive.LapDistance</td>
+                        <td>@(arrive.LapNumber == 0 ? "-" : arrive.LapNumber)</td>
+                        <td>@(arrive.LapDistance == 0 ? "-" : arrive.LapDistance)</td>
                         <td>@arrive.Name</td>
                         <td>
                             <button class="btn btn-success btn-table" 
