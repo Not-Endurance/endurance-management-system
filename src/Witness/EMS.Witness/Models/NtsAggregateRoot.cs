@@ -2,23 +2,23 @@
 
 namespace EMS.Witness.Models;
 
-public abstract class AggregateRoot : IEquatable<AggregateRoot>
+public abstract class NtsAggregateRoot : IEquatable<NtsAggregateRoot>
 {
     static readonly System.Random _random = new();
     static readonly HashSet<int> _uniqueIntegers = [];
     static readonly object LOCK = new();
     
-    public static bool operator ==(AggregateRoot? left, AggregateRoot? right)
+    public static bool operator ==(NtsAggregateRoot? left, NtsAggregateRoot? right)
     {
         return left?.IsEqual(right) ?? right is null;
     }
 
-    public static bool operator !=(AggregateRoot? left, AggregateRoot? right)
+    public static bool operator !=(NtsAggregateRoot? left, NtsAggregateRoot? right)
     {
         return !(left == right);
     }
 
-    protected AggregateRoot(int id)
+    protected NtsAggregateRoot(int id)
     {
         Id = id;
     }
@@ -76,7 +76,7 @@ public abstract class AggregateRoot : IEquatable<AggregateRoot>
         return value ??= "Typo";
     }
 
-    public bool Equals(AggregateRoot? other)
+    public bool Equals(NtsAggregateRoot? other)
     {
         return IsEqual(other);
     }
@@ -98,7 +98,7 @@ public abstract class AggregateRoot : IEquatable<AggregateRoot>
 
     bool IsEqual(object? other)
     {
-        if (other is null or not AggregateRoot)
+        if (other is null or not NtsAggregateRoot)
         {
             return false;
         }

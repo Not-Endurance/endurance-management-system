@@ -2,7 +2,7 @@
 
 namespace EMS.Witness.Models;
 
-public class Loop : AggregateRoot
+public class Loop : NtsAggregateRoot
 {
     public static Loop Create(double? distance)
     {

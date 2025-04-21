@@ -1,30 +1,30 @@
 ﻿namespace EMS.Witness.Models;
 
-public class Athlete : AggregateRoot
+public class NtsAthlete : NtsAggregateRoot
 {
-    public static Athlete Create(string? name, string? feiId, Country? country, Club? club, AthleteCategory? category)
+    public static NtsAthlete Create(string? name, string? feiId, NtsCountry? country, Club? club, NtsAthleteCategory? category)
     {
         return new(Person.Create(name), feiId, country, club, category);
     }
 
-    public static Athlete Update(
+    public static NtsAthlete Update(
         int? id,
         string? name,
         string? feiId,
-        Country? country,
+        NtsCountry? country,
         Club? club,
-        AthleteCategory? category
+        NtsAthleteCategory? category
     )
     {
         return new(id, Person.Create(name), feiId, country, club, category);
     }
 
-    Athlete(Person? person, string? feiId, Country? country, Club? club, AthleteCategory? category)
+    NtsAthlete(Person? person, string? feiId, NtsCountry? country, Club? club, NtsAthleteCategory? category)
         : this(GenerateId(), person, feiId, country, club, category) { }
 
     [Newtonsoft.Json.JsonConstructor]
     [System.Text.Json.Serialization.JsonConstructor]
-    public Athlete(int? id, Person? names, string? feiId, Country? country, Club? club, AthleteCategory? category)
+    public NtsAthlete(int? id, Person? names, string? feiId, NtsCountry? country, Club? club, NtsAthleteCategory? category)
         : base(id!.Value)
     {
         FeiId = feiId;
@@ -36,9 +36,9 @@ public class Athlete : AggregateRoot
 
     public string? FeiId { get; }
     public Person Names { get; }
-    public Country Country { get; }
+    public NtsCountry Country { get; }
     public Club? Club { get; private set; }
-    public AthleteCategory Category { get; private set; }
+    public NtsAthleteCategory Category { get; private set; }
 
     public override string ToString()
     {

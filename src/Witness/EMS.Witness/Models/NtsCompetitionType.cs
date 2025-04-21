@@ -2,7 +2,7 @@
 
 namespace EMS.Witness.Models;
 
-public enum CompetitionType // TODO: Use DisplayAttribute
+public enum NtsCompetitionType // TODO: Use DisplayAttribute
 {
     [Display(Name = "Qualification")]
     Qualification = 1,

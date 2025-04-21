@@ -2,11 +2,11 @@ using Newtonsoft.Json;
 
 namespace EMS.Witness.Models;
 
-public class Competition : AggregateRoot
+public class NtsCompetition : NtsAggregateRoot
 {
-    public static Competition Create(
+    public static NtsCompetition Create(
         string? name,
-        CompetitionType? type,
+        NtsCompetitionType? type,
         CompetitionRuleset ruleset,
         DateTimeOffset start,
         int? compulsoryThresholdMinutes,
@@ -29,10 +29,10 @@ public class Competition : AggregateRoot
         );
     }
 
-    public static Competition Update(
+    public static NtsCompetition Update(
         int? id,
         string? name,
-        CompetitionType type,
+        NtsCompetitionType type,
         CompetitionRuleset? ruleset,
         DateTimeOffset start,
         int? compulsoryThresholdMinutes,
@@ -40,8 +40,8 @@ public class Competition : AggregateRoot
         string? feiEventCode,
         string? feiScheduleNumber,
         string? feiCategoryEventNumber,
-        IEnumerable<Phase> phases,
-        IEnumerable<Participation> participations
+        IEnumerable<NtsPhase> phases,
+        IEnumerable<NtsParticipation> participations
     )
     {
         return new(
@@ -60,12 +60,12 @@ public class Competition : AggregateRoot
         );
     }
 
-    readonly List<Phase> _phases = [];
-    readonly List<Participation> _participations = [];
+    readonly List<NtsPhase> _phases = [];
+    readonly List<NtsParticipation> _participations = [];
 
-    Competition(
+    NtsCompetition(
         string? name,
-        CompetitionType? type,
+        NtsCompetitionType? type,
         CompetitionRuleset ruleset,
         DateTimeOffset start,
         int? compulsoryThresholdMinutes,
@@ -90,10 +90,10 @@ public class Competition : AggregateRoot
         ) { }
 
     [JsonConstructor]
-    public Competition(
+    public NtsCompetition(
         int? id,
         string? name,
-        CompetitionType? type,
+        NtsCompetitionType? type,
         CompetitionRuleset? ruleset,
         DateTimeOffset start,
         TimeSpan? compulsoryThresholdSpan,
@@ -101,8 +101,8 @@ public class Competition : AggregateRoot
         string? feiEventCode,
         string? feiScheduleNumber,
         string? feiCategoryEventNumber,
-        IEnumerable<Phase> phases,
-        IEnumerable<Participation> participations
+        IEnumerable<NtsPhase> phases,
+        IEnumerable<NtsParticipation> participations
     )
         : base(id!.Value)
     {
@@ -120,7 +120,7 @@ public class Competition : AggregateRoot
     }
 
     public string Name { get; }
-    public CompetitionType Type { get; }
+    public NtsCompetitionType Type { get; }
     public CompetitionRuleset Ruleset { get; }
     public DateTimeOffset Start { get; }
     public TimeSpan? CompulsoryThresholdSpan { get; }
@@ -128,54 +128,54 @@ public class Competition : AggregateRoot
     public string? FeiEventCode { get; }
     public string? FeiScheduleNumber { get; }
     public string? FeiCategoryEventNumber { get; }
-    public IReadOnlyList<Phase> Phases => _phases.AsReadOnly();
-    public IReadOnlyList<Participation> Participations => _participations.AsReadOnly();
+    public IReadOnlyList<NtsPhase> Phases => _phases.AsReadOnly();
+    public IReadOnlyList<NtsParticipation> Participations => _participations.AsReadOnly();
 
     public override string ToString()
     {
         return Combine($"{Name} ({Phases.Count})", Type, $"{Start:g}");
     }
 
-    public void Add(Participation child)
+    public void Add(NtsParticipation child)
     {
         ValidateAthleteCategory(child);
         child.SetSpeedLimits(Type);
         _participations.Add(child);
     }
 
-    public void Remove(Participation child)
+    public void Remove(NtsParticipation child)
     {
         _participations.Remove(child);
     }
 
-    public void Update(Participation child)
+    public void Update(NtsParticipation child)
     {
         ValidateAthleteCategory(child);
         _participations.Remove(child);
         Add(child);
     }
 
-    public void Add(Phase child)
+    public void Add(NtsPhase child)
     {
         _phases.Add(child);
     }
 
-    public void Remove(Phase child)
+    public void Remove(NtsPhase child)
     {
         _phases.Remove(child);
     }
 
-    public void Update(Phase child)
+    public void Update(NtsPhase child)
     {
         _phases.Remove(child);
         Add(child);
     }
 
-    void ValidateAthleteCategory(Participation child)
+    void ValidateAthleteCategory(NtsParticipation child)
     {
         if (
-            child.Combination.Athlete.Category == AthleteCategory.JuniorOrYoungAdult
-            && Type == CompetitionType.Championship
+            child.Combination.Athlete.Category == NtsAthleteCategory.JuniorOrYoungAdult
+            && Type == NtsCompetitionType.Championship
         )
         {
         }

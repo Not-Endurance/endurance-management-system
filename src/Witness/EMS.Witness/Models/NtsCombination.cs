@@ -2,20 +2,20 @@
 
 namespace EMS.Witness.Models;
 
-public class Combination : AggregateRoot
+public class NtsCombination : NtsAggregateRoot
 {
-    public static Combination Create(int? number, Athlete? athlete, Horse? horse, Tag? tag)
+    public static NtsCombination Create(int? number, NtsAthlete? athlete, NtsHorse? horse, Tag? tag)
     {
         return new(number, athlete, horse, tag);
     }
 
-    public static Combination Update(int? id, int? number, Athlete? athlete, Horse? horse, Tag? tag)
+    public static NtsCombination Update(int? id, int? number, NtsAthlete? athlete, NtsHorse? horse, Tag? tag)
     {
         return new(id, number, athlete, horse, tag);
     }
 
     [JsonConstructor]
-    public Combination(int? id, int? number, Athlete? athlete, Horse? horse, Tag? tag)
+    public NtsCombination(int? id, int? number, NtsAthlete? athlete, NtsHorse? horse, Tag? tag)
         : base(id!.Value)
     {
         Number = Required(nameof(Number), number);
@@ -24,12 +24,12 @@ public class Combination : AggregateRoot
         Tag = tag;
     }
 
-    public Combination(int? number, Athlete? athlete, Horse? horse, Tag? tag)
+    public NtsCombination(int? number, NtsAthlete? athlete, NtsHorse? horse, Tag? tag)
         : this(GenerateId(), number, athlete, horse, tag) { }
 
     public int Number { get; }
-    public Athlete Athlete { get; private set; }
-    public Horse Horse { get; private set; }
+    public NtsAthlete Athlete { get; private set; }
+    public NtsHorse Horse { get; private set; }
     public Tag? Tag { get; }
 
     public override string ToString()

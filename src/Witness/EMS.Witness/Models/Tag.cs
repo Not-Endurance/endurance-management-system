@@ -1,6 +1,6 @@
 ﻿namespace EMS.Witness.Models;
 
-public class Tag : AggregateRoot
+public class Tag : NtsAggregateRoot
 {
     public Tag(string tagId, int number)
         : base(GenerateId())

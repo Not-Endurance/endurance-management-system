@@ -8,7 +8,7 @@ public class ParticipantEntry : IComparable<ParticipantEntry>, IEquatable<Partic
 {
     public ParticipantEntry() { }
     
-    internal ParticipantEntry(Participation participation)
+    public ParticipantEntry(Participation participation)
     {
         this.Number = participation.Participant.Number;
         this.Name = participation.Participant.Athlete.Name;

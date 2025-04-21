@@ -2,7 +2,7 @@
 
 namespace EMS.Witness.Models;
 
-public enum OfficialRole
+public enum NtsOfficialRole
 {
     [Description("Steward")]
     Steward = 1,

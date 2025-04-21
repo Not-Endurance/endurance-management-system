@@ -4,14 +4,14 @@ namespace EMS.Witness.Models;
 
 public record PopulatedPlace
 {
-    public PopulatedPlace(Country country, string city, string? location)
+    public PopulatedPlace(NtsCountry country, string city, string? location)
     {
         Country = country;
         City = city;
         Location = location;
     }
 
-    public Country Country { get; }
+    public NtsCountry Country { get; }
     public string City { get; }
     public string? Location { get; }
 

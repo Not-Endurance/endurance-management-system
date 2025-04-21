@@ -1,6 +1,6 @@
 ﻿namespace EMS.Witness.Models;
 
-public enum AthleteCategory
+public enum NtsAthleteCategory
 {
     // [Display(Name = "Senior_string", ResourceType = typeof(LocalizedStrings))]
     Senior = 1,

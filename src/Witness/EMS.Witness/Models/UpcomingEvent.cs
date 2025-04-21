@@ -3,9 +3,9 @@ using Newtonsoft.Json;
 
 namespace EMS.Witness.Models;
 
-public class UpcomingEvent : AggregateRoot, IIdentifiable
+public class UpcomingEvent : NtsAggregateRoot, IIdentifiable
 {
-    public static UpcomingEvent Create(string? name, string? place, Country? country, string? showFeiId)
+    public static UpcomingEvent Create(string? name, string? place, NtsCountry? country, string? showFeiId)
     {
         return new(name, place, country, showFeiId);
     }
@@ -14,32 +14,32 @@ public class UpcomingEvent : AggregateRoot, IIdentifiable
         int? id,
         string? name,
         string? place,
-        Country? country,
+        NtsCountry? country,
         string? showFeiId,
-        IEnumerable<Competition> competitions,
-        IEnumerable<Official> officials,
+        IEnumerable<NtsCompetition> competitions,
+        IEnumerable<NtsOfficial> officials,
         IEnumerable<Loop> loops,
-        IEnumerable<Combination> combinations)
+        IEnumerable<NtsCombination> combinations)
     {
         return new(id, name, place, country, showFeiId, competitions, officials, loops, combinations);
     }
 
-    readonly List<Competition> _competitions = [];
-    readonly List<Official> _officials = [];
+    readonly List<NtsCompetition> _competitions = [];
+    readonly List<NtsOfficial> _officials = [];
     readonly List<Loop> _loops = [];
-    readonly List<Combination> _combinations = [];
+    readonly List<NtsCombination> _combinations = [];
 
     [JsonConstructor]
     UpcomingEvent(
         int? id,
         string? name,
         string? place,
-        Country? country,
+        NtsCountry? country,
         string? showFeiId,
-        IEnumerable<Competition> competitions,
-        IEnumerable<Official> officials,
+        IEnumerable<NtsCompetition> competitions,
+        IEnumerable<NtsOfficial> officials,
         IEnumerable<Loop> loops,
-        IEnumerable<Combination> combinations)
+        IEnumerable<NtsCombination> combinations)
         : base(id!.Value)
     {
         Name = Required(nameof(Name), name);
@@ -52,19 +52,19 @@ public class UpcomingEvent : AggregateRoot, IIdentifiable
         _combinations = combinations.ToList();
     }
 
-    UpcomingEvent(string? name, string? place, Country? country, string? showFeiId)
+    UpcomingEvent(string? name, string? place, NtsCountry? country, string? showFeiId)
         : this(GenerateId(), name, place, country, showFeiId, [], [], [], []) { }
 
     public string Name { get; }
     public string Place { get; }
-    public Country Country { get; }
+    public NtsCountry Country { get; }
     public string? ShowFeiId { get; }
-    public IReadOnlyList<Competition> Competitions => _competitions.AsReadOnly();
-    public IReadOnlyList<Official> Officials => _officials.AsReadOnly();
+    public IReadOnlyList<NtsCompetition> Competitions => _competitions.AsReadOnly();
+    public IReadOnlyList<NtsOfficial> Officials => _officials.AsReadOnly();
     public IReadOnlyList<Loop> Loops => _loops.AsReadOnly();
-    public IReadOnlyList<Combination> Combinations => _combinations.AsReadOnly();
+    public IReadOnlyList<NtsCombination> Combinations => _combinations.AsReadOnly();
     
-    public void Remove(Official official)
+    public void Remove(NtsOfficial official)
     {
         _officials.Remove(official);
     }
@@ -82,7 +82,7 @@ public class UpcomingEvent : AggregateRoot, IIdentifiable
         return value;
     }
 
-    void ValidateRole(Official member)
+    void ValidateRole(NtsOfficial member)
     {
         var role = member.Role;
         if (!member.IsUniqueRole())

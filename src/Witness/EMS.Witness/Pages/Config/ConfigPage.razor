@@ -1,4 +1,6 @@
 ﻿@using Core.Application.Rpc
+@using Core.Domain.AggregateRoots.Manager.Aggregates.Participants
+@using EMS.Witness.ConverterFactories
 @using EMS.Witness.Models
 @using EMS.Witness.Services
 
@@ -77,5 +79,17 @@
 	private Task Connect(UpcomingEvent upcomingEvent)
 	{
 		return Task.CompletedTask;
+	}
+
+	private IEnumerable<ParticipantEntry> LoadParticipants(UpcomingEvent upcomingEvent)
+	{
+		foreach (var competition in upcomingEvent.Competitions)
+		{
+			foreach (var participation in competition.Participations)
+			{
+				var participant = ParticipationFactory.CreateEms(participation, competition);
+				yield return new ParticipantEntry(participant);
+			}
+		}
 	}
 }

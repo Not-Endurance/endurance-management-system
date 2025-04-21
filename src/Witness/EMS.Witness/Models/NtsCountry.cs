@@ -1,8 +1,8 @@
 ﻿namespace EMS.Witness.Models;
 
-public class Country : AggregateRoot
+public class NtsCountry : NtsAggregateRoot
 {
-    public Country(int id, string? name, string? isoCode, string? nfCode, string? locale)
+    public NtsCountry(int id, string? name, string? isoCode, string? nfCode, string? locale)
         : base(id)
     {
         Name = name ?? "Default Name";

@@ -11,7 +11,7 @@ namespace Core.Domain.State.Participations;
 public class Participation : DomainBase<ParticipationException>
 {
     internal Participation() {}
-    internal Participation(Participant participant, Competition competition) : base(GENERATE_ID)
+    public Participation(Participant participant, Competition competition) : base(GENERATE_ID)
     {
         this.Participant = participant;
         this.CompetitionConstraint = competition;

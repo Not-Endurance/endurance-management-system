@@ -2,20 +2,20 @@
 
 namespace EMS.Witness.Models;
 
-public class Phase : AggregateRoot
+public class NtsPhase : NtsAggregateRoot
 {
-    public static Phase Create(Loop? loop, int? recovery, int? rest)
+    public static NtsPhase Create(Loop? loop, int? recovery, int? rest)
     {
         return new(loop, recovery, rest);
     }
 
-    public static Phase Update(int? id, Loop? loop, int? recovery, int? rest)
+    public static NtsPhase Update(int? id, Loop? loop, int? recovery, int? rest)
     {
         return new(id, loop, recovery, rest);
     }
 
     [JsonConstructor]
-    public Phase(int? id, Loop? loop, int? recovery, int? rest)
+    public NtsPhase(int? id, Loop? loop, int? recovery, int? rest)
         : base(id!.Value)
     {
         Loop = Required(nameof(Loop), loop);
@@ -23,7 +23,7 @@ public class Phase : AggregateRoot
         Rest = rest;
     }
 
-    public Phase(Loop? loop, int? recovery, int? rest)
+    public NtsPhase(Loop? loop, int? recovery, int? rest)
         : this(GenerateId(), Required(nameof(Loop), loop), PositiveRecovery(recovery), NullOrPositiveRest(rest)) { }
 
     public Loop? Loop { get; private set; } // TODO: shouldnt be nullable probably

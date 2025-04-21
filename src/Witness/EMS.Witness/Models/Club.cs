@@ -2,7 +2,7 @@
 
 namespace EMS.Witness.Models;
 
-public class Club : AggregateRoot
+public class Club : NtsAggregateRoot
 {
     public static Club Create(string? name)
     {

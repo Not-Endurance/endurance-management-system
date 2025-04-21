@@ -2,28 +2,28 @@
 
 namespace EMS.Witness.Models;
 
-public class Participation : AggregateRoot
+public class NtsParticipation : NtsAggregateRoot
 {
     const double CHILDREN_MIN_SPEED = 8;
     const double CHILDREN_MAX_SPEED = 12;
     const double MIN_SPEED = 10;
     const double MAX_SPEED = 16;
 
-    public static Participation Create(
+    public static NtsParticipation Create(
         DateTimeOffset? newStart,
         bool isUnranked,
-        Combination? combination,
+        NtsCombination? combination,
         double? maxSpeedOverride
     )
     {
         return new(newStart, isUnranked, combination, maxSpeedOverride);
     }
 
-    public static Participation Update(
+    public static NtsParticipation Update(
         int? id,
         DateTimeOffset? newStart,
         bool isUnranked,
-        Combination? combination,
+        NtsCombination? combination,
         double? maxSpeedOverride
     )
     {
@@ -31,11 +31,11 @@ public class Participation : AggregateRoot
     }
 
     [JsonConstructor]
-    Participation(
+    NtsParticipation(
         int? id,
         DateTimeOffset? startTimeOverride,
         bool isUnranked,
-        Combination? combination,
+        NtsCombination? combination,
         double? maxSpeedOverride
     )
         : base(id!.Value)
@@ -46,28 +46,28 @@ public class Participation : AggregateRoot
         MaxSpeedOverride = maxSpeedOverride;
     }
 
-    Participation(
+    NtsParticipation(
         DateTimeOffset? startTimeOverride,
         bool isUnranked,
-        Combination? combination,
+        NtsCombination? combination,
         double? maxSpeedOverride
     )
         : this(GenerateId(), IsFutureTime(startTimeOverride), isUnranked, combination, maxSpeedOverride) { }
 
-    public Combination Combination { get; private set; }
+    public NtsCombination Combination { get; private set; }
     public bool IsNotRanked { get; }
     public DateTimeOffset? StartTimeOverride { get; }
     public double? MinAverageSpeed { get; private set; }
     public double? MaxAverageSpeed { get; private set; }
     public double? MaxSpeedOverride { get; private set; }
 
-    internal void SetSpeedLimits(CompetitionType competitionType)
+    internal void SetSpeedLimits(NtsCompetitionType competitionType)
     {
         var athleteCategory = Combination.Athlete.Category;
         MinAverageSpeed = MIN_SPEED;
-        if (competitionType == CompetitionType.Qualification)
+        if (competitionType == NtsCompetitionType.Qualification)
         {
-            if (athleteCategory == AthleteCategory.Children)
+            if (athleteCategory == NtsAthleteCategory.Children)
             {
                 MinAverageSpeed = CHILDREN_MIN_SPEED;
                 MaxAverageSpeed = CHILDREN_MAX_SPEED;
