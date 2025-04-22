@@ -49,8 +49,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-ios|AnyCPU'">
     <CreatePackage>false</CreatePackage>
     <ApplicationId>com.ems.witness</ApplicationId>
-    <CodesignKey>Apple Distribution: ALEXANDER NIKOLOV CHOBANOV (979B4XB2MX)</CodesignKey>
-    <CodesignProvision>e.Witness</CodesignProvision>
+    <CodesignKey>iPhone Distribution: ALEXANDER NIKOLOV CHOBANOV (979B4XB2MX)</CodesignKey>
+    <CodesignProvision>ems.Witness</CodesignProvision>
     <ProvisioningType>manual</ProvisioningType>
   </PropertyGroup>
   
