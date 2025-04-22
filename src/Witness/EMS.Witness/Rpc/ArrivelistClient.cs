@@ -15,7 +15,7 @@ public class ParticipantsClient : RpcClient, IParticipantsClient, IParticipantsC
     private readonly IWitnessState _witnessState;
     private readonly IToaster _toaster;
 
-    public event EventHandler<(ParticipantEntry entry, CollectionAction action)>? Updated;
+	public event EventHandler<(ParticipantEntry entry, CollectionAction action)>? Updated;
 	public event EventHandler<IEnumerable<ParticipantEntry>>? Loaded;
 
 	public ParticipantsClient(SignalRSocket socket, IWitnessState witnessState, IToaster toaster) : base(socket)
@@ -23,7 +23,7 @@ public class ParticipantsClient : RpcClient, IParticipantsClient, IParticipantsC
         _socket = socket;
         _witnessState = witnessState;
         _toaster = toaster;
-        RegisterClientProcedure<ParticipantEntry, CollectionAction>(nameof(this.ReceiveEntryUpdate), this.ReceiveEntryUpdate);
+		RegisterClientProcedure<ParticipantEntry, CollectionAction>(nameof(this.ReceiveEntryUpdate), this.ReceiveEntryUpdate);
     }
 
     public Task ReceiveEntryUpdate(ParticipantEntry entry, CollectionAction action)
@@ -51,7 +51,20 @@ public class ParticipantsClient : RpcClient, IParticipantsClient, IParticipantsC
             return RpcInvokeResult.Error;
         }
 
-        var payload = new ProcessSnapshotsPayload { Entries = entries.ToList(), Type = type };
+        var resultEntries = new List<ParticipantEntry>();
+        foreach (var entry in entries)
+        {
+            var newEntry = new ParticipantEntry
+            {
+                ArriveTime = entry.ArriveTime?.ToUniversalTime(),
+                LapDistance = entry.LapDistance,
+                LapNumber = entry.LapNumber,
+                Name = entry.Name,
+                Number = entry.Number,
+            };
+            resultEntries.Add(newEntry);
+        }
+        var payload = new ProcessSnapshotsPayload { Entries = resultEntries, Type = type };
         var request = WarpRequest.Create(_witnessState.EventId.ToString()!, payload);
 		return await InvokeInputProcedure(nameof(IParticipantsHubProcedures.ReceiveWitnessEvent), request);
     }
