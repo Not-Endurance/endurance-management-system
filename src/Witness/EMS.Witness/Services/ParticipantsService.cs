@@ -10,17 +10,20 @@ namespace EMS.Witness.Services;
 
 public class ParticipantsService : IParticipantsService
 {
+	private readonly IPersistenceService _persistence;
 	private readonly IWitnessState state;
     private readonly IWitnessContext context;
     private readonly IParticipantsClient participantsClient;
     private readonly IToaster toaster;
 
     public ParticipantsService(
+        IPersistenceService persistence,
         IWitnessState state,
         IWitnessContext context,
         IParticipantsClient arrivelistClient,
         IToaster toaster)
     {
+		_persistence = persistence;
 		this.state = state;
         this.context = context;
         this.participantsClient = arrivelistClient;
@@ -99,6 +102,7 @@ public class ParticipantsService : IParticipantsService
             this.Snapshots.Clear();
             this.toaster.Add($"{nameof(this.Send)} Successful", $"Sent '{batch.Participants.Count}' entries", UiColor.Success, 3);
         }
+        await _persistence.Store();
     }
     public async Task Resend(ParticipantsBatch batch, WitnessEventType type)
     {
