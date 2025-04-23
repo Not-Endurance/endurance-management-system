@@ -1,0 +1,66 @@
+name: "[net8] Publish Witness iOS"
+
+on:
+  workflow_dispatch:
+env:
+    DOTNET_VERSION: 8.0.x
+    SOURCE_PATH: src/Witness/EMS.Witness/
+    TARGET: net8.0-ios
+jobs:
+  witness-publish-ios:
+    runs-on: macos-latest
+    steps:
+      - name: 🧾 Checkout source
+        uses: actions/checkout@v3
+
+      - name: 🛠 Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '${{ env.DOTNET_VERSION }}'
+
+      - name: 💼 Install MAUI Workloads
+        run: cd ${{ env.SOURCE_PATH }} && dotnet workload install maui ios maui-ios --skip-manifest-update
+
+      - name: 📦 Restore dependencies
+        run: cd ${{ env.SOURCE_PATH }} dotnet restore
+
+      - name: 🔐 Decode and Install iOS Signing Certificate
+        run: |
+          echo "$IOS_DISTRIBUTION_CERTIFICATE" | base64 --decode -o cert.p12
+          security create-keychain -p "password" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "password" build.keychain
+          security import cert.p12 -k build.keychain -P "$IOS_DISTRIBUTION_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "password" build.keychain
+        env:
+          IOS_DISTRIBUTION_CERTIFICATE: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE }}
+          IOS_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+
+      - name: 🔐 Install Provisioning Profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$IOS_DISTRIBUTION_PROVISIONING_PROFILE" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+        env:
+          IOS_DISTRIBUTION_PROVISIONING_PROFILE: ${{ secrets.IOS_DISTRIBUTION_PROVISIONING_PROFILE }}
+
+      - name: 🏗️ Build and Sign iOS App
+        run: |
+          cd ${{ env.SOURCE_PATH }} && \
+          dotnet publish src/YourApp/YourApp.csproj \
+            -f:${{ env.TARGET }} \
+            -c:Release \
+            -p:RuntimeIdentifier=ios-arm64 \
+            -p:CodesignProvision="profile.mobileprovision" \
+            -p:UseInterpreter=true \
+            -p:EnableAssemblyILStripping=false \
+            -p:Optimize=true \
+            -p:BuildIpa=true \
+            -p:GenerateIpa=true \
+            -p:BundleIdentifier="${{ secrets.APPLE_WITNESS_BUNDLE_IDENTIFIER }}" \
+            -o:output/ios
+
+      - name: 📤 Upload .ipa
+        uses: actions/upload-artifact@v4
+        with:
+          name: com.ems.witness
+          path: output/ios/**/*.ipa
