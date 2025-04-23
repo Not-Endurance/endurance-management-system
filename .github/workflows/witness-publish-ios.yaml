@@ -90,6 +90,10 @@ jobs:
         env:
           APPLE_APPSTORECONNECT_KEY: ${{ secrets.APPLE_APPSTORECONNECT_KEY }}
 
+      - name: 📦 Update Fastlane
+        run: |
+          sudo gem install fastlane -N
+
       - name: 🚀 Upload to TestFlight
         run: |
           fastlane pilot upload --ipa ./ipa/*.ipa
