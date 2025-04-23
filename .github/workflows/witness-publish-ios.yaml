@@ -46,7 +46,7 @@ jobs:
       - name: 🏗️ Build and Sign iOS App
         run: |
           cd ${{ env.SOURCE_PATH }} && \
-          dotnet publish src/YourApp/YourApp.csproj \
+          dotnet publish \
             -f:${{ env.TARGET }} \
             -c:Release \
             -p:RuntimeIdentifier=ios-arm64 \
