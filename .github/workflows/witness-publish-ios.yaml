@@ -8,6 +8,7 @@ env:
     TARGET: net8.0-ios
 jobs:
   witness-publish-ios:
+    name: 🏗️ Build ipa
     runs-on: macos-15
     steps:
       - name: 🧾 Checkout source
@@ -65,3 +66,34 @@ jobs:
         with:
           name: com.ems.witness
           path: output/ios/**/*.ipa
+  
+  witness-publish-ios-upload-testflight:
+    name: 🚀 Upload to TestFlight
+    runs-on: macos-latest
+    needs: witness-publish-ios
+
+    steps:
+      - name: 📥 Download built IPA
+        uses: actions/download-artifact@v4
+        with:
+          name: signed-ipa
+          path: ./ipa
+
+      - name: 🚀 Install Fastlane
+        run: brew install fastlane
+
+      - name: 🔑 Setup App Store Connect API Key
+        run: |
+          mkdir -p fastlane
+          echo "$APPLE_APPSTORECONNECT_KEY" | base64 --decode -o fastlane/AuthKey_${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}.p8
+        env:
+          APPLE_APPSTORECONNECT_KEY: ${{ secrets.APPLE_APPSTORECONNECT_KEY }}
+
+      - name: 🚀 Upload to TestFlight
+        run: |
+          fastlane pilot upload \
+            --ipa ./ipa/*.ipa \
+            --api_key_path fastlane/AuthKey_${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}.p8 \
+            --api_key_id ${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }} \
+            --issuer_id ${{ secrets.APPLE_APPSTORECONNECT_KEY_ISSUER_ID }} \
+            --team_id ${{ secrets.APPLE_TEAM_ID }}
