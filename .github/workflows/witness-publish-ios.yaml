@@ -97,10 +97,7 @@ jobs:
             EOF
 
       - name: verify api_key.json
-        run: |
-          ls -la fastlane/private_keys
-          less fastlane/private_keys/AuthKey.p8
-          less fastlane/api_key.json
+        run: less api_key.json
 
       - name: 🚀 Upload to TestFlight
         run: fastlane pilot upload --ipa ./ipa/*.ipa --api_key_path api_key.json
