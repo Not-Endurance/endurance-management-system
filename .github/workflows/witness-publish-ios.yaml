@@ -43,6 +43,9 @@ jobs:
         env:
           IOS_DISTRIBUTION_PROVISIONING_PROFILE: ${{ secrets.IOS_DISTRIBUTION_PROVISIONING_PROFILE }}
 
+      - name: Test provision profile
+        run: ls -la ~/Library/MobileDevice/Provisioning\ Profiles
+
       - name: 🏗️ Build and Sign iOS App
         run: |
           cd ${{ env.SOURCE_PATH }} && \
@@ -50,7 +53,6 @@ jobs:
             -f:${{ env.TARGET }} \
             -c:Release \
             -p:RuntimeIdentifier=ios-arm64 \
-            -p:CodesignProvision="profile.mobileprovision" \
             -p:UseInterpreter=true \
             -p:EnableAssemblyILStripping=false \
             -p:Optimize=true \
