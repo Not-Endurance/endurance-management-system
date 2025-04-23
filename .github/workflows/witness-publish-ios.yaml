@@ -85,13 +85,6 @@ jobs:
           brew install fastlane
           sudo gem install fastlane -N
 
-      - name: 🔑 Setup App Store Connect API Key
-        run: |
-          mkdir -p fastlane
-          echo "$APPLE_APPSTORECONNECT_KEY" | base64 --decode -o fastlane/AuthKey_${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}.p8
-        env:
-          APPLE_APPSTORECONNECT_KEY: ${{ secrets.APPLE_APPSTORECONNECT_KEY }}
-
       - name: 🔑 Setup API Key JSON
         run: |
             mkdir -p fastlane/private_keys
@@ -112,12 +105,13 @@ jobs:
 
       - name: 🚀 Upload to TestFlight
         run: |
+          KUR=$(echo ${{ secrets.APPLE_APPSTORECONNECT_KEY }} | base64 -- decode)
+          echo $KUR
           PILOT_API_KEY_JSON=$(cat <<EOF
             {
                 "key_id": "${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}",
                 "issuer_id": "${{ secrets.APPLE_APPSTORECONNECT_KEY_ISSUER_ID }}",
-                "key_filepath": "fastlane/private_keys/AuthKey_${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}.p8",
-                "in_house": false
+                "key": "$KUR",
             }
             EOF)
           echo "$PILOT_API_KEY_JSON"
