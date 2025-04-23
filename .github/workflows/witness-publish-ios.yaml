@@ -55,7 +55,7 @@ jobs:
             -p:RuntimeIdentifier=ios-arm64 \
             -p:UseInterpreter=true \
             -p:EnableAssemblyILStripping=false \
-            -p:Optimize=true \
+            -p:Optimize=false \
             -p:BuildIpa=true \
             -p:GenerateIpa=true \
             -p:BundleIdentifier="${{ secrets.APPLE_WITNESS_BUNDLE_IDENTIFIER }}" \
