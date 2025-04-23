@@ -19,7 +19,7 @@ jobs:
           dotnet-version: '${{ env.DOTNET_VERSION }}'
 
       - name: 💼 Install MAUI Workloads
-        run: cd ${{ env.SOURCE_PATH }} && dotnet workload install maui ios maui-ios --skip-manifest-update
+        run: cd ${{ env.SOURCE_PATH }} && dotnet workload install maui --skip-manifest-update
 
       - name: 📦 Restore dependencies
         run: cd ${{ env.SOURCE_PATH }} dotnet restore
@@ -55,7 +55,7 @@ jobs:
             -p:RuntimeIdentifier=ios-arm64 \
             -p:UseInterpreter=true \
             -p:EnableAssemblyILStripping=false \
-            -p:Optimize=false \
+            -p:Optimize=true \
             -p:BuildIpa=true \
             -p:GenerateIpa=true \
             -p:BundleIdentifier="${{ secrets.APPLE_WITNESS_BUNDLE_IDENTIFIER }}" \
