@@ -87,15 +87,12 @@ jobs:
 
       - name: 🔑 Setup API Key JSON
         run: |
-            mkdir -p fastlane/private_keys
-            
-            echo ${{ secrets.APPLE_APPSTORECONNECT_KEY }}
-            
-            cat <<EOF > fastlane/api_key.json
+            touch api_key.json
+            cat <<EOF > api_key.json
             {
                 "key_id": "${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}",
                 "issuer_id": "${{ secrets.APPLE_APPSTORECONNECT_KEY_ISSUER_ID }}",
-                "key": "${{ secrets.APPLE_APPSTORECONNECT_KEY }}",
+                "key": "${{ secrets.APPLE_APPSTORECONNECT_KEY }}"
             }
             EOF
 
@@ -106,4 +103,4 @@ jobs:
           less fastlane/api_key.json
 
       - name: 🚀 Upload to TestFlight
-        run: fastlane pilot upload --ipa ./ipa/*.ipa --api_key_path fastlane/api_key.json
+        run: fastlane pilot upload --ipa ./ipa/*.ipa --api_key_path api_key.json
