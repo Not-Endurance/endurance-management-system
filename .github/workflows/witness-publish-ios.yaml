@@ -112,9 +112,15 @@ jobs:
 
       - name: 🚀 Upload to TestFlight
         run: |
-          fastlane pilot upload \
-            --ipa ./ipa/*.ipa \
-            --api-key fastlane/private_keys/AuthKey.p8
+          PILOT_API_KEY_JSON=$(cat <<EOF
+            {
+                "key_id": "${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}",
+                "issuer_id": "${{ secrets.APPLE_APPSTORECONNECT_KEY_ISSUER_ID }}",
+                "key_filepath": "fastlane/private_keys/AuthKey_${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}.p8",
+                "in_house": false
+            }
+            EOF)
+          fastlane pilot upload --ipa ./ipa/*.ipa --api-key "$PILOT_API_KEY_JSON"
         # env:
         #   FASTLANE_APPLE_API_KEY_PATH: fastlane/AuthKey_${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}.p8
         #   FASTLANE_APPLE_API_KEY_ID: ${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}
