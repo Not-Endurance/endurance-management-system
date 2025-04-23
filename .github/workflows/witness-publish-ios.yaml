@@ -113,6 +113,7 @@ jobs:
                 "issuer_id": "${{ secrets.APPLE_APPSTORECONNECT_KEY_ISSUER_ID }}",
                 "key": "$KUR",
             }
+            EOF
           echo "$PILOT_API_KEY_JSON"
           fastlane pilot upload --ipa ./ipa/*.ipa --api_key_path fastlane/api_key.json
         # env:
