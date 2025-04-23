@@ -86,6 +86,8 @@ jobs:
           sudo gem install fastlane -N
 
       - name: 🔑 Setup API Key JSON
+        # If updating APPLE_APPSTORECONNECT_KEY MAKE SURE TO REMOVE NEW LINES from .p8 file contents
+        # otherwise below JSON will be invalid and I couldn't get a new line escape to work for 2 hours
         run: |
             touch api_key.json
             cat <<EOF > api_key.json
@@ -95,9 +97,6 @@ jobs:
                 "key": "${{ secrets.APPLE_APPSTORECONNECT_KEY }}"
             }
             EOF
-
-      - name: verify api_key.json
-        run: less api_key.json
 
       - name: 🚀 Upload to TestFlight
         run: fastlane pilot upload --ipa ./ipa/*.ipa --api_key_path api_key.json
