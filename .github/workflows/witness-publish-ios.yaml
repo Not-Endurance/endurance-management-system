@@ -93,7 +93,8 @@ jobs:
             {
                 "key_id": "${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}",
                 "issuer_id": "${{ secrets.APPLE_APPSTORECONNECT_KEY_ISSUER_ID }}",
-                "key": "$(echo ${{ secrets.APPLE_APPSTORECONNECT_KEY }} | base64 --decode)"
+                "key": "${{ secrets.APPLE_APPSTORECONNECT_KEY }}",
+                "is_key_content_base64": true
             }
             EOF
 
