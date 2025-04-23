@@ -16,7 +16,7 @@ jobs:
       - name: 🛠 Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '${{ env.DOTNET_VERSION }}'
+          global-json-file: global.json
 
       - name: 💼 Install MAUI Workloads
         run: cd ${{ env.SOURCE_PATH }} && dotnet workload install maui --skip-manifest-update
