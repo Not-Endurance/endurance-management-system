@@ -108,13 +108,13 @@ jobs:
             ASC_API_KEY: ${{ secrets.ASC_API_KEY }}
 
       - name: verify api_key.json
-        run: ls -la "fastlane/AuthKey_${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}.p8"
+        run: ls -la "fastlane"
 
       - name: 🚀 Upload to TestFlight
         run: |
           fastlane pilot upload \
             --ipa ./ipa/*.ipa \
-            --api-key ${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}
+            --api-key fastlane/private_keys/AuthKey.p8
         # env:
         #   FASTLANE_APPLE_API_KEY_PATH: fastlane/AuthKey_${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}.p8
         #   FASTLANE_APPLE_API_KEY_ID: ${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}
