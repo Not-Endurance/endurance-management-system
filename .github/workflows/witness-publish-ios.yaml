@@ -8,70 +8,70 @@ env:
     TARGET: net8.0-ios
     ARTIFACT_NAME: com.ems.witness
 jobs:
-#   witness-publish-ios:
-#     name: 🏗️ Build package
-#     runs-on: macos-15
-#     steps:
-#       - name: 🧾 Checkout source
-#         uses: actions/checkout@v3
+  witness-publish-ios:
+    name: 🏗️ Build package
+    runs-on: macos-15
+    steps:
+      - name: 🧾 Checkout source
+        uses: actions/checkout@v3
 
-#       - name: 🛠 Setup .NET
-#         uses: actions/setup-dotnet@v4
-#         with:
-#           global-json-file: global.json
+      - name: 🛠 Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
 
-#       - name: 💼 Install MAUI Workloads
-#         run: ~/.dotnet/dotnet workload install maui --skip-manifest-update
+      - name: 💼 Install MAUI Workloads
+        run: ~/.dotnet/dotnet workload install maui --skip-manifest-update
 
-#       - name: 📦 Restore dependencies
-#         run: ~/.dotnet/dotnet restore ${{ env.SOURCE_PATH }}
+      - name: 📦 Restore dependencies
+        run: ~/.dotnet/dotnet restore ${{ env.SOURCE_PATH }}
 
-#       - name: 🔐 Decode and Install iOS Signing Certificate
-#         run: |
-#           echo "$IOS_DISTRIBUTION_CERTIFICATE" | base64 --decode -o cert.p12
-#           security create-keychain -p "password" build.keychain
-#           security default-keychain -s build.keychain
-#           security unlock-keychain -p "password" build.keychain
-#           security import cert.p12 -k build.keychain -P "$IOS_DISTRIBUTION_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
-#           security set-key-partition-list -S apple-tool:,apple: -s -k "password" build.keychain
-#         env:
-#           IOS_DISTRIBUTION_CERTIFICATE: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE }}
-#           IOS_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+      - name: 🔐 Decode and Install iOS Signing Certificate
+        run: |
+          echo "$IOS_DISTRIBUTION_CERTIFICATE" | base64 --decode -o cert.p12
+          security create-keychain -p "password" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "password" build.keychain
+          security import cert.p12 -k build.keychain -P "$IOS_DISTRIBUTION_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "password" build.keychain
+        env:
+          IOS_DISTRIBUTION_CERTIFICATE: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE }}
+          IOS_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
 
-#       - name: 🔐 Install Provisioning Profile
-#         run: |
-#           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-#           echo "$IOS_DISTRIBUTION_PROVISIONING_PROFILE" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
-#         env:
-#           IOS_DISTRIBUTION_PROVISIONING_PROFILE: ${{ secrets.IOS_DISTRIBUTION_PROVISIONING_PROFILE }}
+      - name: 🔐 Install Provisioning Profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$IOS_DISTRIBUTION_PROVISIONING_PROFILE" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+        env:
+          IOS_DISTRIBUTION_PROVISIONING_PROFILE: ${{ secrets.IOS_DISTRIBUTION_PROVISIONING_PROFILE }}
 
-#       - name: Test provision profile
-#         run: ls -la ~/Library/MobileDevice/Provisioning\ Profiles
+      - name: Test provision profile
+        run: ls -la ~/Library/MobileDevice/Provisioning\ Profiles
 
-#       - name: 🏗️ Build and Sign iOS App
-#         run: |
-#           ~/.dotnet/dotnet publish ${{ env.SOURCE_PATH }} \
-#             -f:${{ env.TARGET }} \
-#             -c:Release \
-#             -p:RuntimeIdentifier=ios-arm64 \
-#             -p:UseInterpreter=true \
-#             -p:EnableAssemblyILStripping=false \
-#             -p:Optimize=true \
-#             -p:BuildIpa=true \
-#             -p:GenerateIpa=true \
-#             -p:BundleIdentifier="${{ secrets.APPLE_WITNESS_BUNDLE_IDENTIFIER }}" \
-#             -o:output/ios
+      - name: 🏗️ Build and Sign iOS App
+        run: |
+          ~/.dotnet/dotnet publish ${{ env.SOURCE_PATH }} \
+            -f:${{ env.TARGET }} \
+            -c:Release \
+            -p:RuntimeIdentifier=ios-arm64 \
+            -p:UseInterpreter=true \
+            -p:EnableAssemblyILStripping=false \
+            -p:Optimize=true \
+            -p:BuildIpa=true \
+            -p:GenerateIpa=true \
+            -p:BundleIdentifier="${{ secrets.APPLE_WITNESS_BUNDLE_IDENTIFIER }}" \
+            -o:output/ios
 
-#       - name: 📤 Upload .ipa
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: ${{ env.ARTIFACT_NAME }}
-#           path: output/ios/**/*.ipa
+      - name: 📤 Upload .ipa
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: output/ios/**/*.ipa
   
   witness-publish-ios-upload-testflight:
     name: 🚀 Upload to TestFlight
     runs-on: macos-latest
-    # needs: witness-publish-ios
+    needs: witness-publish-ios
 
     steps:
     #   - name: 📥 Download built IPA
