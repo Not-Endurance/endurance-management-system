@@ -93,14 +93,15 @@ jobs:
             {
                 "key_id": "${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}",
                 "issuer_id": "${{ secrets.APPLE_APPSTORECONNECT_KEY_ISSUER_ID }}",
-                "key": "${{ secrets.APPLE_APPSTORECONNECT_KEY }}",
-                "is_key_content_base64": true
+                "key_filepath": "fastlane/private_keys/AuthKey.p8",
+                "in_house": false
             }
             EOF
 
       - name: verify api_key.json
         run: |
-          ls -la fastlane
+          ls -la fastlane/private_keys
+          less fastlane/private_keys/AuthKey.p8
           less fastlane/api_key.json
 
       - name: 🚀 Upload to TestFlight
