@@ -115,8 +115,8 @@ jobs:
           fastlane pilot upload \
             --ipa ./ipa/*.ipa \
             --api-key ${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}
-        env:
-          FASTLANE_APPLE_API_KEY_PATH: fastlane/AuthKey_${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}.p8
-          FASTLANE_APPLE_API_KEY_ID: ${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}
-          FASTLANE_APPLE_ISSUER_ID: ${{ secrets.APPLE_APPSTORECONNECT_KEY_ISSUER_ID }}
-          FASTLANE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        # env:
+        #   FASTLANE_APPLE_API_KEY_PATH: fastlane/AuthKey_${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}.p8
+        #   FASTLANE_APPLE_API_KEY_ID: ${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}
+        #   FASTLANE_APPLE_ISSUER_ID: ${{ secrets.APPLE_APPSTORECONNECT_KEY_ISSUER_ID }}
+        #   FASTLANE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
