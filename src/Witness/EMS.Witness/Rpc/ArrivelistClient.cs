@@ -51,12 +51,12 @@ public class ParticipantsClient : RpcClient, IParticipantsClient, IParticipantsC
             return RpcInvokeResult.Error;
         }
 
-        var resultEntries = new List<ParticipantEntry>();
+        var resultEntries = new List<EmsSnapshotModel>();
         foreach (var entry in entries)
         {
-            var newEntry = new ParticipantEntry
+            var newEntry = new EmsSnapshotModel
             {
-                ArriveTime = entry.ArriveTime?.ToUniversalTime(),
+                ArriveTime = entry.ArriveTime!.Value,
                 LapDistance = entry.LapDistance,
                 LapNumber = entry.LapNumber,
                 Name = entry.Name,
@@ -68,6 +68,15 @@ public class ParticipantsClient : RpcClient, IParticipantsClient, IParticipantsC
         var request = WarpRequest.Create(_witnessState.EventId.ToString()!, payload);
 		return await InvokeInputProcedure(nameof(IParticipantsHubProcedures.ReceiveWitnessEvent), request);
     }
+}
+
+public class EmsSnapshotModel
+{
+	public int LapNumber { get; init; }
+    public string Number { get; init; } = default!;
+	public string Name { get; init; } = default!;
+	public DateTimeOffset ArriveTime { get; init; }
+	public double LapDistance { get; init; }
 }
 
 public interface IParticipantsClient
