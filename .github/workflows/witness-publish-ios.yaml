@@ -89,12 +89,14 @@ jobs:
         run: |
             mkdir -p fastlane/private_keys
             echo "$APPLE_APPSTORECONNECT_KEY" | base64 --decode -o fastlane/private_keys/AuthKey.p8
+
+            ESCAPED_KEY=$(cat fastlane/private_keys/AuthKey.p8 | awk '{printf "%s\\n", $0}')
+            
             cat <<EOF > fastlane/api_key.json
             {
                 "key_id": "${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}",
                 "issuer_id": "${{ secrets.APPLE_APPSTORECONNECT_KEY_ISSUER_ID }}",
-                "key_filepath": "fastlane/private_keys/AuthKey.p8",
-                "in_house": false
+                "key": "${ESCAPED_KEY}",
             }
             EOF
 
