@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using static Core.Application.CoreApplicationConstants;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Core.Application.Rpc;
 
@@ -16,18 +16,17 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
     public event EventHandler<RpcConnectionStatus>? ServerConnectionChanged;
     public event EventHandler<string>? ServerConnectionInfo;
     public event EventHandler<RpcError>? Error;
-    private System.Timers.Timer? _reconnectionTimer;
-
     public bool IsConnected => this.Connection?.State == HubConnectionState.Connected;
 
-    private readonly RpcContext _context;
+    private readonly IRpcContext _context;
+    private readonly IRpcMetadata _metadata;
 
-    private CancellationTokenSource? reconnectTokenSource;
     private readonly string _name;
 
-    public SignalRSocket()
+    public SignalRSocket(IRpcContext context, IRpcMetadata metadata)
     {
-        _context = new RpcContext(RpcProtocls.Http, RPC_PORT, RPC_ENDPOINT);
+        _context = context;
+        _metadata = metadata;
         _name = GetType().Name;
     }
 
@@ -36,20 +35,23 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
     internal List<Action<HubConnection>> Procedures { get; } = new();
     internal HubConnection? Connection { get; private set; }
 
-    public virtual async Task Connect(string host)
+    public virtual async Task Connect(string? localHost)
     {
-        await InternalConnect(host, 0);
+        if (localHost != null)
+        {
+			_context.LocalHost = localHost;
+		}
+		await InternalConnect(0);
     }
 
     public virtual async Task Disconnect()
     {
-        if (this.Connection == null || !this.IsConnected)
+        if (Connection != null)
         {
-            return;
-        }
-        this.reconnectTokenSource!.Cancel();
-        await this.Connection.StopAsync();
-        RaiseDisconnected();
+			await this.Connection.StopAsync();
+			Connection = null;
+		}
+		RaiseDisconnected();
     }
 
     public async ValueTask DisposeAsync()
@@ -62,30 +64,30 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
         this.Connection.Reconnecting -= HandleReconnecting;
         this.Connection.Closed -= HandleClosed;
         await this.Connection.DisposeAsync();
-        this.reconnectTokenSource?.Dispose();
         // Might occasionally trigger ObjectDisposedException if timer.Elapsed attempts to run
         // during or after Dispose. See https://codereview.stackexchange.com/questions/223877/safe-dispose-of-timer
         // for potential solutions
-        _reconnectionTimer?.Dispose();
     }
 
-    private async Task InternalConnect(string host, int reconnectAttempts)
+    private async Task InternalConnect(int reconnectAttempts)
     {
         if (IsConnected)
         {
             ServerConnectionInfo?.Invoke(this, $"{this.GetType().Name} is already connected");
             return;
         }
-        if (this.Connection == null)
-        {
-            this.ConfigureConnection(host);
-        }
         try
         {
-            this.reconnectTokenSource = new CancellationTokenSource();
+            if (this.Connection == null)
+            {
+                this.ConfigureConnection();
+            }
             RaiseConnecting();
             await this.Connection!.StartAsync();
-            this.RaiseConnected();
+            if (IsConnected)
+            {
+                this.RaiseConnected();
+            }
         }
         catch (Exception ex)
         {
@@ -95,16 +97,22 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
                 return;
             }
             await Task.Delay(TimeSpan.FromSeconds(5));
-            await InternalConnect(host, reconnectAttempts);
+            await InternalConnect(reconnectAttempts);
         }
     }
 
-    private void ConfigureConnection(string host)
+    private void ConfigureConnection()
     {
-        _context.Host = host;
-        this.Connection = new HubConnectionBuilder()
+        var query = new Dictionary<string, string?>();
+        if (_metadata.ConnectionGroupKey != null)
+        {
+            query.Add("connectionGroup", _metadata.ConnectionGroupKey);
+        }
+
+        var url = QueryHelpers.AddQueryString(_context.Url, query);
+		this.Connection = new HubConnectionBuilder()
             .AddNewtonsoftJsonProtocol(x => x.PayloadSerializerSettings = new NJsonSettings())
-            .WithUrl(this._context.Url)
+            .WithUrl(url)
             .WithAutomaticReconnect(new AutomaticReconnectSetting())
             .Build();
         this.Connection.Reconnected += HandleReconnected;
@@ -116,24 +124,20 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
         }
     }
 
-    private Task HandleReconnected(string connectionId)
+    private Task HandleReconnected(string? connectionId)
     {
         RaiseConnected($"SignalR automatic reconnected: {connectionId}");
         return Task.CompletedTask;
     }
 
-    private Task HandleReconnecting(Exception exception)
+    private Task HandleReconnecting(Exception? exception)
     {
-        RaiseReconnecting($"SignalR automatic reconnecting: {exception.Message}");
+        RaiseReconnecting($"SignalR automatic reconnecting: {exception?.Message}");
         return Task.CompletedTask;
     }
 
-    private Task HandleClosed(Exception exception)
+    private Task HandleClosed(Exception? exception)
     {
-        if (reconnectTokenSource?.IsCancellationRequested ?? true)
-        {
-            return Task.CompletedTask;
-        }
         RaiseDisconnected(exception);
 
         return Task.CompletedTask;

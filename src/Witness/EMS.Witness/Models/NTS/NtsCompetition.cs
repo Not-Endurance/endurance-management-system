@@ -1,0 +1,193 @@
+using Newtonsoft.Json;
+
+namespace EMS.Witness.Models;
+
+public class NtsCompetition : NtsAggregateRoot
+{
+    public static NtsCompetition Create(
+        string? name,
+        NtsCompetitionType? type,
+        CompetitionRuleset ruleset,
+        DateTimeOffset start,
+        int? compulsoryThresholdMinutes,
+        string? feiRule,
+        string? feiEventCode,
+        string? feiScheduleNumber,
+        string? feiCategoryEventNumber
+    )
+    {
+        return new(
+            name,
+            type,
+            ruleset,
+            start,
+            compulsoryThresholdMinutes,
+            feiRule,
+            feiEventCode,
+            feiScheduleNumber,
+            feiCategoryEventNumber
+        );
+    }
+
+    public static NtsCompetition Update(
+        int? id,
+        string? name,
+        NtsCompetitionType type,
+        CompetitionRuleset? ruleset,
+        DateTimeOffset start,
+        int? compulsoryThresholdMinutes,
+        string? feiRule,
+        string? feiEventCode,
+        string? feiScheduleNumber,
+        string? feiCategoryEventNumber,
+        IEnumerable<NtsPhase> phases,
+        IEnumerable<NtsParticipation> participations
+    )
+    {
+        return new(
+            id,
+            name,
+            type,
+            ruleset,
+            start,
+            ToTimeSpan(compulsoryThresholdMinutes),
+            feiRule,
+            feiEventCode,
+            feiScheduleNumber,
+            feiCategoryEventNumber,
+            phases,
+            participations
+        );
+    }
+
+    readonly List<NtsPhase> _phases = [];
+    readonly List<NtsParticipation> _participations = [];
+
+    NtsCompetition(
+        string? name,
+        NtsCompetitionType? type,
+        CompetitionRuleset ruleset,
+        DateTimeOffset start,
+        int? compulsoryThresholdMinutes,
+        string? feiRule,
+        string? feiEventCode,
+        string? feiScheduleNumber,
+        string? feiCategoryEventNumber
+    )
+        : this(
+            GenerateId(),
+            name,
+            type,
+            ruleset,
+            IsFutureTime(nameof(Start), start),
+            ToTimeSpan(compulsoryThresholdMinutes),
+            feiRule,
+            feiEventCode,
+            feiScheduleNumber,
+            feiCategoryEventNumber,
+            [],
+            []
+        ) { }
+
+    [JsonConstructor]
+    public NtsCompetition(
+        int? id,
+        string? name,
+        NtsCompetitionType? type,
+        CompetitionRuleset? ruleset,
+        DateTimeOffset start,
+        TimeSpan? compulsoryThresholdSpan,
+        string? feiRule,
+        string? feiEventCode,
+        string? feiScheduleNumber,
+        string? feiCategoryEventNumber,
+        IEnumerable<NtsPhase> phases,
+        IEnumerable<NtsParticipation> participations
+    )
+        : base(id!.Value)
+    {
+        _phases = phases.ToList();
+        _participations = participations.ToList();
+        Name = Required(nameof(Name), name);
+        Type = Required(nameof(Type), type);
+        Ruleset = Required(nameof(Ruleset), ruleset);
+        Start = start;
+        CompulsoryThresholdSpan = compulsoryThresholdSpan;
+        FeiRule = feiRule;
+        FeiEventCode = feiEventCode;
+        FeiScheduleNumber = feiScheduleNumber;
+        FeiCategoryEventNumber = feiCategoryEventNumber;
+    }
+
+    public string Name { get; }
+    public NtsCompetitionType Type { get; }
+    public CompetitionRuleset Ruleset { get; }
+    public DateTimeOffset Start { get; }
+    public TimeSpan? CompulsoryThresholdSpan { get; }
+    public string? FeiRule { get; }
+    public string? FeiEventCode { get; }
+    public string? FeiScheduleNumber { get; }
+    public string? FeiCategoryEventNumber { get; }
+    public IReadOnlyList<NtsPhase> Phases => _phases.AsReadOnly();
+    public IReadOnlyList<NtsParticipation> Participations => _participations.AsReadOnly();
+
+    public override string ToString()
+    {
+        return Combine($"{Name} ({Phases.Count})", Type, $"{Start:g}");
+    }
+
+    public void Add(NtsParticipation child)
+    {
+        ValidateAthleteCategory(child);
+        child.SetSpeedLimits(Type);
+        _participations.Add(child);
+    }
+
+    public void Remove(NtsParticipation child)
+    {
+        _participations.Remove(child);
+    }
+
+    public void Update(NtsParticipation child)
+    {
+        ValidateAthleteCategory(child);
+        _participations.Remove(child);
+        Add(child);
+    }
+
+    public void Add(NtsPhase child)
+    {
+        _phases.Add(child);
+    }
+
+    public void Remove(NtsPhase child)
+    {
+        _phases.Remove(child);
+    }
+
+    public void Update(NtsPhase child)
+    {
+        _phases.Remove(child);
+        Add(child);
+    }
+
+    void ValidateAthleteCategory(NtsParticipation child)
+    {
+        if (
+            child.Combination.Athlete.Category == NtsAthleteCategory.JuniorOrYoungAdult
+            && Type == NtsCompetitionType.Championship
+        )
+        {
+        }
+    }
+
+    static DateTimeOffset IsFutureTime(string field, DateTimeOffset start)
+    {
+        return start;
+    }
+
+    static TimeSpan? ToTimeSpan(int? minutes)
+    {
+        return minutes != null ? TimeSpan.FromMinutes(minutes.Value) : null;
+    }
+}

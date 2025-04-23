@@ -1,6 +1,5 @@
 ﻿@using Core.Application.Rpc
 @using EMS.Witness.Services;
-@using EMS.Witness.Rpc;
 
 @implements IDisposable;
 
@@ -14,7 +13,7 @@
 				</div>
 			</div>
 		}
-		@if (this.rpcConnectionStatus == RpcConnectionStatus.Connecting)
+		else if (this.rpcConnectionStatus == RpcConnectionStatus.Connecting)
 		{
 			<div class="col-3">
 				<div class="spinner-border text-warning" role="status">
@@ -22,15 +21,17 @@
 				</div>
 			</div>
 		}
-		@if (this.rpcConnectionStatus == RpcConnectionStatus.Connected)
+		else if (this.rpcConnectionStatus == RpcConnectionStatus.Connected)
 		{
 			<div class="col-3">
-				<a class="navbar-brand" href="">Witness 5.1 (NTS)</a>
+				<a class="navbar-brand" href="">@(WitnessState.EventName ?? "hey-connected-no-event?")</a>
 			</div>
 		}
-		@if (!isHandshaking && rpcConnectionStatus == RpcConnectionStatus.Disconnected)
+		else @*if (@* !isHandshaking && rpcConnectionStatus == RpcConnectionStatus.Disconnected) *@
 		{
-			<button class="btn btn-warning" @onclick="_rpcInitializer.StartConnections">Reconnect</button>
+			<div class="col-3">
+				<a class="navbar-brand" href="">Not connected (v5.2)</a>
+			</div>
 		}
 		<div class="col-3">
 			<button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -52,10 +53,16 @@
 				<span class="oi oi-list-rich" aria-hidden="true"></span> Startlist
 			</NavLink>
 		</div>
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="config">
+				<span class="oi oi-list-rich" aria-hidden="true"></span> Config
+			</NavLink>
+		</div>
 	</nav>
 </div>
 
 @code {
+	[Inject] private IWitnessState WitnessState { get; set; } = default!;
 	[Inject]
 	private IWitnessContext Context { get; set; } = default!;
 	[Inject]
@@ -76,7 +83,6 @@
 	{
 		this.CollapseNavMenu = !this.CollapseNavMenu;
 	}
-
 	private RpcConnectionStatus rpcConnectionStatus;
 	private bool isHandshaking;
 
@@ -87,19 +93,19 @@
 		_rpcSocket.ServerConnectionChanged += HandleServerConnectionChanged;
 		_rpcSocket.ServerConnectionInfo += HandleServerConnectionInfo;
 		this.Context.IsHandshakingEvent += HandleIsHandshakingEvent;
-		await StartRpcConnections(_rpcInitializer);
+		// await StartRpcConnections(_rpcInitializer);
 	}
 
-	private static bool isConnecting;
-	public static async Task StartRpcConnections(IRpcInitalizer rpcInitalizer)
+	public static bool IsConnecting;
+	public static async Task StartRpcConnections(IRpcInitalizer rpcInitalizer, IWitnessState state)
 	{
-		if (isConnecting)
+		if (IsConnecting || state.EventId == null)
 		{
 			return;
 		}
-		isConnecting = true;
+		IsConnecting = true;
 		await SafeActionHelper.Act(async () => await rpcInitalizer.StartConnections());
-		isConnecting = false;
+		IsConnecting = false;
 	}
 
 	public void Dispose()

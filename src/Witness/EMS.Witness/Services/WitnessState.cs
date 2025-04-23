@@ -1,15 +1,17 @@
-﻿using Core.Domain.AggregateRoots.Manager.Aggregates.Participants;
+﻿using Core.Application.Rpc;
+using Core.Domain.AggregateRoots.Manager.Aggregates.Participants;
 using Core.Models;
 
 namespace EMS.Witness.Services;
 
-public class WitnessState : IWitnessState
+public class WitnessState : IWitnessState, IRpcMetadata
 {
     public static event EventHandler<EventArgs>? StateLoaded;
     public ObservableCollection<ParticipantEntry> ParticipantSnapshots { get; private set; } = new();
     public ObservableCollection<ParticipantEntry> ParticipantSelected { get; private set; } = new();
     public SortedCollection<ParticipantsBatch> ParticipantHistory { get; private set; } = new();
 	public int? EventId { get; set; }
+	public string? EventName { get; set; }
 	public string? HostIp { get; set; }
 
 	public void Set(IWitnessState state)
@@ -19,12 +21,15 @@ public class WitnessState : IWitnessState
         this.ParticipantHistory = state.ParticipantHistory;
         StateLoaded?.Invoke(this, new EventArgs());
     }
+
+    public string? ConnectionGroupKey => EventId?.ToString();
 }
 
 public interface IWitnessState
 {
     string? HostIp { get; set; }
-    int? EventId { get; set; }
+    int? EventId { get; }
+    string? EventName { get; }
     ObservableCollection<ParticipantEntry> ParticipantSnapshots { get; }
     ObservableCollection<ParticipantEntry> ParticipantSelected { get; }
     SortedCollection<ParticipantsBatch> ParticipantHistory { get; }

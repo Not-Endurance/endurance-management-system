@@ -1,0 +1,131 @@
+﻿@using Core.Application.Rpc
+@using Core.Domain.AggregateRoots.Manager.Aggregates.Participants
+@using EMS.Witness.ConverterFactories
+@using EMS.Witness.Models
+@using EMS.Witness.Services
+
+@page "/config"
+<a class="navbar-brand" href="">Endurance events</a>
+
+<div class="row">
+	<table class="table">
+		<thead>
+		<tr>
+			<th>Place</th>
+			<th>Name</th>
+			<th>Action</th>
+		</tr>
+		</thead>
+		<tbody>
+		@if (!_upcomingEvents.Any())
+		{
+			<div class="col-3">
+				<div class="spinner-border text-warning" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
+			</div>
+		}
+		else
+		{
+			foreach (var upcomingEvent in _upcomingEvents)
+			{
+				var isDisabled = _witnessState.EventId == upcomingEvent.Id;
+				var text = isDisabled ? "Connected" : "Connect";
+				<tr>
+					<td>
+						<span>@upcomingEvent.Place</span>
+					</td>
+					<td>
+						<span>@upcomingEvent.Name</span>
+					</td>
+					<td>
+						<button class="btn btn-success btn-table" @onclick="_ => Connect(upcomingEvent)" disabled="@isDisabled">@text</button>
+					</td>
+				</tr>
+			}	
+		}
+		</tbody>
+	</table>
+</div>
+
+<br />
+@if (!RpcSocket.IsConnected && _witnessState.EventId != null && !NavMenu.IsConnecting)
+{
+	<p>This isn't supposed to be visible</p>
+	<button class="btn btn-warning" @onclick="() => NavMenu.StartRpcConnections(_rpcInitializer, _witnessState)">Reconnect</button>
+}
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+
+<label>
+	<input class="oi" type="checkbox" checked="@RpcContext.UseLocalHost" @oninput="ChangeRpcConnection" />
+	Use Local server
+</label>
+
+
+@code {
+	[Inject] private IRpcSocket RpcSocket { get; set; } = default!;
+	[Inject]
+	private IRpcContext RpcContext { get; set; } = default!;
+	[Inject]
+	private IRpcInitalizer _rpcInitializer { get; set; } = default!;
+
+	[Inject] private WitnessState _witnessState { get; set; } = default!;
+	[Inject]
+	private IUpcomingEventRepository _repository { get; set; } = default!;
+
+	[Inject] private IPersistenceService _persistence { get; set; } = default!;
+
+	private IEnumerable<UpcomingEvent> _upcomingEvents = [];
+
+	private async Task ChangeRpcConnection(ChangeEventArgs e)
+	{
+		RpcContext.UseLocalHost = (bool)e.Value!;
+		await _rpcInitializer.Disconnect();
+		await _rpcInitializer.StartConnections();
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		_upcomingEvents = await _repository.ReadAll();
+	}
+
+	private async Task Connect(UpcomingEvent upcomingEvent)
+	{
+		_witnessState.EventId = upcomingEvent.Id;
+		_witnessState.EventName = upcomingEvent.Name;
+		await NavMenu.StartRpcConnections(_rpcInitializer, _witnessState);
+		await _persistence.RestoreIfAny(upcomingEvent.Id, upcomingEvent.Name);
+	}
+
+	private IEnumerable<ParticipantEntry> LoadParticipants(UpcomingEvent upcomingEvent)
+	{
+		foreach (var competition in upcomingEvent.Competitions)
+		{
+			foreach (var participation in competition.Participations)
+			{
+				var participant = ParticipationFactory.CreateEms(participation, competition);
+				yield return new ParticipantEntry(participant);
+			}
+		}
+	}
+}

@@ -92,15 +92,18 @@ public class Toaster : IToaster, INotificationService, IDisposable
 
     private bool ClearBurntToast()
     {
-        var toastsToDelete = new List<Toast>();
-		toastsToDelete = this.toastList.Where(item => item.IsBurnt).ToList();
-        if (!toastsToDelete.Any())
+        lock (lockObject)
         {
-            return false;
+            var toastsToDelete = new List<Toast>();
+            toastsToDelete = this.toastList.Where(item => item.IsBurnt).ToList();
+            if (!toastsToDelete.Any())
+            {
+                return false;
+            }
+            
+            this.ToasterChanged?.Invoke(this, EventArgs.Empty);
+            return true;
         }
-		
-		this.ToasterChanged?.Invoke(this, EventArgs.Empty);
-        return true;
     }
 
     private void HandleTimerElapsed(object? sender, ElapsedEventArgs e)

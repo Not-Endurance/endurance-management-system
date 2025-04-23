@@ -86,7 +86,7 @@ public abstract class RpcClient
         });
     }
 
-    public async Task<RpcInvokeResult> InvokeHubProcedure<T>(string name, T parameter)
+    public async Task<RpcInvokeResult> InvokeInputProcedure<T>(string name, T parameter)
     {
         try
         {
@@ -114,7 +114,7 @@ public abstract class RpcClient
         }
     }
 
-    public async Task<RpcInvokeResult<T>> InvokeHubProcedure<T>(string name)
+    public async Task<RpcInvokeResult<T>> InvokeOutputProcedure<T>(string name)
     {
         try
         {
@@ -125,6 +125,20 @@ public abstract class RpcClient
         {
             _socket.RaiseError(exception, name);
             return RpcInvokeResult<T>.Error;
+        }
+    }
+
+    public async Task<RpcInvokeResult<TOutput>> InvokeInputOutputProcedure<TInput, TOutput>(string name, TInput input)
+    {
+        try
+        {
+            var result = await _socket.Connection!.InvokeAsync<TOutput>(name, input);
+            return RpcInvokeResult<TOutput>.Success(result);
+        }
+        catch (Exception exception)
+        {
+            _socket.RaiseError(exception, name);
+            return RpcInvokeResult<TOutput>.Error;
         }
     }
 }

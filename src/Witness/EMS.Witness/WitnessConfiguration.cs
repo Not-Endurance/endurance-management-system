@@ -7,6 +7,7 @@ using EMS.Witness.Services;
 using EMS.Witness.Platforms.Services;
 using EMS.Witness.Rpc;
 using Core.Application.Rpc;
+using static Core.Application.CoreApplicationConstants;
 
 namespace EMS.Witness;
 
@@ -20,6 +21,8 @@ public static class WitnessConfiguration
             .Concat(CoreApplicationConstants.Assemblies)
             .Concat(WitnessConstants.Assemblies)
             .ToArray();
+
+        var rpcContext = new RpcContext("nts-nexus-warp-dev-bbajctffatawefea.westeurope-01.azurewebsites.net",  RPC_ENDPOINT, RPC_PORT);
 
         services
             .AddCore(assemblies)
@@ -40,6 +43,10 @@ public static class WitnessConfiguration
             .AddTransient<IRpcInitalizer, RpcInitializer>()
             .AddSingleton<LoggingClient>()
             .AddSingleton<IWitnessLogger, LoggingClient>()
+            .AddSingleton<IRpcContext>(rpcContext)
+            .AddTransient<IUpcomingEventRepository, UpcomingEventHttpRepository>()
+            .AddTransient<NHttpClient>()
+            .AddSingleton<IRpcMetadata>(x => x.GetRequiredService<WitnessState>())
             .AddHttpClient();
 
         return services;

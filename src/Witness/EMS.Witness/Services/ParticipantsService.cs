@@ -1,5 +1,4 @@
-﻿using Core.Application.Services;
-using Core.ConventionalServices;
+﻿using Core.ConventionalServices;
 using Core.Domain.AggregateRoots.Manager;
 using Core.Domain.AggregateRoots.Manager.Aggregates.Participants;
 using Core.Enums;
@@ -16,22 +15,19 @@ public class ParticipantsService : IParticipantsService
     private readonly IWitnessContext context;
     private readonly IParticipantsClient participantsClient;
     private readonly IToaster toaster;
-    private readonly IDateService dateService;
 
     public ParticipantsService(
         IPersistenceService persistence,
         IWitnessState state,
         IWitnessContext context,
         IParticipantsClient arrivelistClient,
-        IToaster toaster,
-        IDateService dateService)
+        IToaster toaster)
     {
 		_persistence = persistence;
 		this.state = state;
         this.context = context;
         this.participantsClient = arrivelistClient;
         this.toaster = toaster;
-        this.dateService = dateService;
     }
 
     public SortedCollection<ParticipantEntry> Participants => this.context.Participants;
@@ -56,21 +52,14 @@ public class ParticipantsService : IParticipantsService
         if (result.IsSuccessful)
         {
             //var (eventId, participants) = result.Data;
-            var eventId = result.Data!.EventId;
-            var participants = result.Data.Participants;
-            if (eventId == default || participants == default)
+            if (result.Data == null || !result.Data.Any())
             {
                 return;
             }
             lock (Participants)
             {
                 this.Participants.Clear();
-                this.Participants.AddRange(participants!);
-            }
-            if (!state.EventId.HasValue)
-            {
-                state.EventId = eventId;
-                await _persistence.RestoreIfAny(eventId);
+                this.Participants.AddRange(result.Data);
             }
 		}
     }
@@ -113,6 +102,7 @@ public class ParticipantsService : IParticipantsService
             this.Snapshots.Clear();
             this.toaster.Add($"{nameof(this.Send)} Successful", $"Sent '{batch.Participants.Count}' entries", UiColor.Success, 3);
         }
+        await _persistence.Store();
     }
     public async Task Resend(ParticipantsBatch batch, WitnessEventType type)
     {
@@ -135,8 +125,16 @@ public class ParticipantsService : IParticipantsService
     {
         this.Selected.Remove(entry);
 
-        entry.ArriveTime = DateTime.Now;
-        var existing = this.Snapshots.FirstOrDefault(x => x == entry);
+        entry = new ParticipantEntry
+        {
+            ArriveTime = DateTime.Now,
+            LapDistance = entry.LapDistance,
+            LapNumber = entry.LapNumber,
+            Name = entry.Name,
+            Number = entry.Number,
+        };
+
+        var existing = this.Snapshots.FirstOrDefault(x => x.Number == entry.Number);
         if (existing != null)
         {
             this.Snapshots.Remove(existing);

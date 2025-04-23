@@ -1,46 +1,54 @@
-﻿using System;
+﻿namespace Core.Application.Rpc;
 
-namespace Core.Application.Rpc;
-
-public class RpcContext
+public class RpcContext : IRpcContext
 {
-    private readonly RpcProtocls protocol;
-    private readonly int port;
+    private readonly int? port;
     private readonly string endpoint;
-    private string? host;
+    private string? localHost;
+    private string remoteHost;
 
-    public RpcContext(RpcProtocls protocol, int port, string endpoint)
+    public RpcContext(string remoteHost, string endpoint, int localhostPort)
     {
         if (endpoint.StartsWith("/"))
         {
             endpoint = endpoint[1..];
         }
-        this.protocol = protocol;
-        this.port = port;
+        this.port = localhostPort;
         this.endpoint = endpoint;
+		this.remoteHost = NormalizeHost(remoteHost);
+#if DEBUG
+		UseLocalHost = true;
+# endif
     }
 
-    public string? Host
+    public bool UseLocalHost { get; set; }
+    public string? LocalHost
     {
-        get => this.host; 
-        internal set
+        get => this.localHost;
+        set => this.localHost = value == null ? null : NormalizeHost(value);
+    }
+
+    public string Url
+        => UseLocalHost
+            ? $"{RpcProtocls.Http.ToString().ToLower()}://{this.localHost}:{this.port}/{this.endpoint}"
+            : $"{RpcProtocls.Https.ToString().ToLower()}://{this.remoteHost}/{this.endpoint}";
+
+    private string NormalizeHost(string host)
+    {
+        if (host.EndsWith("/") || host.EndsWith(":"))
         {
-            if (value == null)
-            {
-                throw new ArgumentException("RPC host cannot be null", nameof(Host));
-            }
-            if (value.EndsWith("/") || value.EndsWith(":"))
-            {
-                this.host = value[..^1];
-            }
-            else
-            {
-                this.host = value;
-            }
+            return host[..^1];
+        }
+        else
+        {
+            return host;
         }
     }
-    public string? Url
-        => this.Host == null
-            ? null
-            : $"{this.protocol.ToString().ToLower()}://{this.host}:{this.port}/{this.endpoint}";
+}
+
+public interface IRpcContext
+{
+    bool UseLocalHost { get; set; }
+    string Url { get; }
+    string? LocalHost { get; set; }
 }
