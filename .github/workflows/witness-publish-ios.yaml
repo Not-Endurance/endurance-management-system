@@ -80,12 +80,17 @@ jobs:
           name: ${{ env.ARTIFACT_NAME }}
           path: ./ipa
 
-      - name: 🚀 Install Fastlane
-        run: brew install fastlane
-
-      - name: 📦 Update Fastlane
+      - name: 📦 Install Fastlane
         run: |
+          brew install fastlane
           sudo gem install fastlane -N
+
+      - name: 🔑 Setup App Store Connect API Key
+        run: |
+          mkdir -p fastlane
+          echo "$APPLE_APPSTORECONNECT_KEY" | base64 --decode -o fastlane/AuthKey_${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}.p8
+        env:
+          APPLE_APPSTORECONNECT_KEY: ${{ secrets.APPLE_APPSTORECONNECT_KEY }}
 
       - name: 🚀 Upload to TestFlight
         run: |
@@ -94,7 +99,7 @@ jobs:
             --api-key "{
                 "key_id": "${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}",
                 "issuer_id": "${{ secrets.APPLE_APPSTORECONNECT_KEY_ISSUER_ID }}",
-                "key_filepath": "fastlane/private_keys/AuthKey.p8",
+                "key_filepath": "fastlane/AuthKey_${{ secrets.APPLE_APPSTORECONNECT_KEY_ID }}.p8",
                 "in_house": false
             }"
         env:
