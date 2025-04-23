@@ -74,11 +74,11 @@ jobs:
     needs: witness-publish-ios
 
     steps:
-    #   - name: 📥 Download built IPA
-    #     uses: actions/download-artifact@v4
-    #     with:
-    #       name: ${{ env.ARTIFACT_NAME }}
-    #       path: ./ipa
+      - name: 📥 Download built IPA
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ./ipa
 
       - name: 📦 Install Fastlane
         run: |
