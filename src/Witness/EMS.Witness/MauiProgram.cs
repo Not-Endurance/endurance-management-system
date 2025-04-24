@@ -33,8 +33,14 @@ public static class MauiProgram
 
 	private static void WorkaroundBlazorWebViewNotLoadingOnIOS()
 	{
-		var handlerType = typeof(BlazorWebViewHandler);
-		var field = handlerType.GetField("AppOriginUri", BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("AppOriginUri field not found");
-		field.SetValue(null, new Uri("app://localhost/"));
+		try
+		{
+			var handlerType = typeof(BlazorWebViewHandler);
+			var field = handlerType.GetField("AppOriginUri", BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("AppOriginUri field not found");
+			field.SetValue(null, new Uri("app://localhost/"));
+		}
+		catch
+		{
+		}
 	}
 }
