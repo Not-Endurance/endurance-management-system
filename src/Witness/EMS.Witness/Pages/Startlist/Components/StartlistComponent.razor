@@ -52,7 +52,7 @@
 					}
 					else if (entry.IsRestOver)
 					{
-						<td>@this.DateService.FormatTime(entry.StartTime)</td>
+						<td>@this.DateService.FormatTime(entry.StartTime.LocalDateTime)</td>
 					}
 					else
 					{
