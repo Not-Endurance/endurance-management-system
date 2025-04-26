@@ -42,7 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
     <ApplicationId>com.ems.witness</ApplicationId>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
-    <AndroidKeyStore>true</AndroidKeyStore>
+    <!--<AndroidKeyStore>true</AndroidKeyStore>-->
     <AndroidSigningKeyAlias>ems.apps</AndroidSigningKeyAlias>
   </PropertyGroup>
 

@@ -56,7 +56,7 @@
 					}
 					else
 					{
-						<td>@this.DateService.FormatTime(entry.StartTime - this.DateService.GetNow())</td>
+						<td>@this.DateService.FormatTime(entry.StartTime.LocalDateTime - DateTimeOffset.Now.LocalDateTime)</td>
 					}
 				</tr>
 			}

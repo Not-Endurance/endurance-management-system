@@ -51,7 +51,7 @@ public class StartlistEntry : IComparable<StartlistEntry>, IEquatable<StartlistE
     public int CompareTo(StartlistEntry other)
     {
         var maximumLateStart = TimeSpan.FromMinutes(15);
-        var now = DateTime.Now;
+        var now = DateTimeOffset.Now;
         var thisDiff = this.StartTime - now;
         var otherDiff = other.StartTime - now;
         var isRestOver = this.StartTime < now;
