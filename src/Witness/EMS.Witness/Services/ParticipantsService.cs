@@ -84,12 +84,12 @@ public class ParticipantsService : IParticipantsService
     {
         entry.ArriveTime = null;
         this.Snapshots.Remove(entry);
-        this.Participants.Add(entry);
     }
 
     public void RemoveSelected(ParticipantEntry entry)
     {
         this.Selected.Remove(entry);
+        this.Participants.Add(entry);
     }
 
     public async Task Send(WitnessEventType type)
@@ -119,11 +119,13 @@ public class ParticipantsService : IParticipantsService
         {
             this.Selected.Add(entry);
         }
+        this.Participants.Remove(entry);
     }
 
     public void CreateSnapshot(ParticipantEntry entry)
     {
         this.Selected.Remove(entry);
+        this.Participants.Add(entry);
 
         entry = new ParticipantEntry
         {
@@ -145,7 +147,11 @@ public class ParticipantsService : IParticipantsService
     public void Update(ParticipantEntry entry, CollectionAction action)
     {
         this.Participants.Update(entry, action);
-    }
+        if (action == CollectionAction.Remove)
+        {
+			this.Selected.Update(entry, action);
+		}
+	}
 }
 
 public interface IParticipantsService : ISingletonService
