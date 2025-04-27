@@ -83,8 +83,11 @@ public class SignalRSocket : IRpcSocket, IAsyncDisposable, ISingletonService
                 this.ConfigureConnection();
             }
             RaiseConnecting();
-            await this.Connection!.StartAsync();
-            if (IsConnected)
+            if (Connection!.State == HubConnectionState.Disconnected)
+            {
+				await this.Connection!.StartAsync();
+			}
+			if (IsConnected)
             {
                 this.RaiseConnected();
             }

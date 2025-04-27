@@ -10,50 +10,43 @@
 <div class="row">
 	<table class="table">
 		<thead>
-		<tr>
-			<th>Place</th>
-			<th>Name</th>
-			<th>Action</th>
-		</tr>
+			<tr>
+				<th>Place</th>
+				<th>Name</th>
+				<th>Action</th>
+			</tr>
 		</thead>
 		<tbody>
-		@if (!_upcomingEvents.Any())
-		{
-			<div class="col-3">
-				<div class="spinner-border text-warning" role="status">
-					<span class="visually-hidden">Loading...</span>
-				</div>
-			</div>
-		}
-		else
-		{
-			foreach (var upcomingEvent in _upcomingEvents)
+			@if (!_upcomingEvents.Any())
 			{
-				var isDisabled = _witnessState.EventId == upcomingEvent.Id;
-				var text = isDisabled ? "Connected" : "Connect";
-				<tr>
-					<td>
-						<span>@upcomingEvent.Place</span>
-					</td>
-					<td>
-						<span>@upcomingEvent.Name</span>
-					</td>
-					<td>
-						<button class="btn btn-success btn-table" @onclick="_ => Connect(upcomingEvent)" disabled="@isDisabled">@text</button>
-					</td>
-				</tr>
-			}	
-		}
+				<div class="col-3">
+					<div class="spinner-border text-warning" role="status">
+						<span class="visually-hidden">Loading...</span>
+					</div>
+				</div>
+			}
+			else
+			{
+				foreach (var upcomingEvent in _upcomingEvents)
+				{
+					var isDisabled = _witnessState.EventId == upcomingEvent.Id && RpcSocket.IsConnected;
+					var text = isDisabled ? "Connected" : "Connect";
+					<tr>
+						<td>
+							<span>@upcomingEvent.Place</span>
+						</td>
+						<td>
+							<span>@upcomingEvent.Name</span>
+						</td>
+						<td>
+							<button class="btn btn-success btn-table" @onclick="_ => Connect(upcomingEvent)" disabled="@isDisabled">@text</button>
+						</td>
+					</tr>
+				}	
+			}
 		</tbody>
 	</table>
 </div>
-
-<br />
-@if (!RpcSocket.IsConnected && _witnessState.EventId != null && !NavMenu.IsConnecting)
-{
-	<p>This isn't supposed to be visible</p>
-	<button class="btn btn-warning" @onclick="() => NavMenu.StartRpcConnections(_rpcInitializer, _witnessState)">Reconnect</button>
-}
 
 <br />
 <br />
@@ -107,6 +100,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		_upcomingEvents = await _repository.ReadAll();
+		RpcSocket.ServerConnectionChanged += (_, __) => InvokeAsync(StateHasChanged);
 	}
 
 	private async Task Connect(UpcomingEvent upcomingEvent)
