@@ -29,7 +29,6 @@
 			<tr>
 				<th>#</th>
 				<th>Name</th>
-				<th>Stage</th>
 				<th>Distance</th>
 				<th>Time</th>
 			</tr>
@@ -40,8 +39,7 @@
 				<tr class="@(entry.IsRestOver ? "text-muted" : "")">
 					<td>@entry.Number</td>
 					<td>@entry.AthleteName</td>
-					<td>@entry.Stage</td>
-					<td>@entry.Distance.ToString("#.##")</td>
+					<td style="text-align:center">@entry.Distance.ToString("#.##")</td>
 					@if (entry.IsRestOver && entry.IsLateStart)
 					{
 						var diff = entry.StartTime - this.DateService.GetNow();

@@ -21,7 +21,11 @@ public class ParticipantEntry : IComparable<ParticipantEntry>, IEquatable<Partic
     public string Number { get; init; }
     public string Name { get; init; }
     public DateTime? ArriveTime { get; set; }
-    public double LapDistance { get; set; }
+
+	/// <summary>
+	/// It's actually total Distance (that's what's assigned in Warp)
+	/// </summary>
+	public double LapDistance { get; set; }
     
     public int CompareTo(ParticipantEntry other)
     {
