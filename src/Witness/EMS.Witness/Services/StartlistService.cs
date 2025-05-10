@@ -37,6 +37,7 @@ public class StartlistService : IStartlistService
 
     public void Update(StartlistEntry entry, CollectionAction action)
     {
+        CheckIsRestOver(entry);
         if (!this.StartlistsByStage.ContainsKey(entry.Stage))
         {
             this.StartlistsByStage[entry.Stage] = new();
@@ -56,6 +57,11 @@ public class StartlistService : IStartlistService
         this.SelectedStage = stage;
         this.Startlist.Clear();
         this.Startlist.AddRange(list);
+    }
+
+    private void CheckIsRestOver(StartlistEntry entry)
+    {
+        entry.IsRestOver = entry.StartTime <= DateTimeOffset.Now;
     }
 }
 

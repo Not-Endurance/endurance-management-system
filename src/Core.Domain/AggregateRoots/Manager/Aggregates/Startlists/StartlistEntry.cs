@@ -45,7 +45,7 @@ public class StartlistEntry : IComparable<StartlistEntry>, IEquatable<StartlistE
     public double Distance { get; init; }
     public int Stage { get; init; } 
     public DateTimeOffset StartTime { get; init; }
-    public bool IsRestOver { get; internal set; }
+    public bool IsRestOver { get; set; }
     public bool IsLateStart { get; internal set; }
 
     public int CompareTo(StartlistEntry other)
