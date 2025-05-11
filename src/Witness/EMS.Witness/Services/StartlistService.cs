@@ -1,6 +1,4 @@
-﻿using Core.Application.Rpc;
-using Core.Application.Rpc.Procedures;
-using Core.ConventionalServices;
+﻿using Core.ConventionalServices;
 using Core.Domain.AggregateRoots.Manager.Aggregates.Startlists;
 using Core.Enums;
 using Core.Models;

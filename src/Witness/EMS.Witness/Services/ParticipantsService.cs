@@ -152,6 +152,15 @@ public class ParticipantsService : IParticipantsService
 			this.Selected.Update(entry, action);
 		}
 	}
+
+	public Task Reset()
+	{
+        Participants.Clear();
+        Selected.Clear();
+        Snapshots.Clear();
+        History.Clear();
+        return Task.CompletedTask;
+	}
 }
 
 public interface IParticipantsService : ISingletonService
@@ -170,4 +179,5 @@ public interface IParticipantsService : ISingletonService
     void RemoveSnapshot(ParticipantEntry entry);
     Task Send(WitnessEventType type);
     Task Resend(ParticipantsBatch batch, WitnessEventType type);
+    Task Reset();
 }

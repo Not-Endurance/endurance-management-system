@@ -14,7 +14,13 @@ public class PopupService : IPopupService
         this.dateService = dateService;
     }
 
-    public async Task<DateTime?> EditTime(DateTime time)
+	public async Task<bool> Confirm(string text)
+	{
+        var result = await RenderActionSheet(text, "Yes");
+        return result == "Yes";
+	}
+
+	public async Task<DateTime?> EditTime(DateTime time)
     {
         var formatted = this.dateService.FormatTime(time, showMs: true);
         var resultString = await Application.Current.MainPage.DisplayPromptAsync(
@@ -31,7 +37,7 @@ public class PopupService : IPopupService
 
     public async Task<string> RenderActionSheet(string text, params string[] values)
     {
-        return await Application.Current.MainPage.DisplayActionSheet("Select Type", CLOSE, null, values);
+        return await Application.Current.MainPage.DisplayActionSheet(text, CLOSE, null, values);
     }
 
     public async Task<WitnessEventType?> SelecEventType()
@@ -53,4 +59,5 @@ public interface IPopupService : ITransientService
     Task<DateTime?> EditTime(DateTime time);
     Task<WitnessEventType?> SelecEventType();
     Task<string> RenderActionSheet(string text, params string[] values);
+    Task<bool> Confirm(string text);
 }

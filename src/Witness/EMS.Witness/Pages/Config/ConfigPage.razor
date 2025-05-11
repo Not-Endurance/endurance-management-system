@@ -48,6 +48,8 @@
 	</table>
 </div>
 
+<p>Reset snapshots, history and startlist: </p>
+<button class="btn btn-success btn-table" @onclick="_ => OpenResetDialog()">Reset</button>
 <br />
 <br />
 <br />
@@ -87,6 +89,12 @@
 	private IUpcomingEventRepository _repository { get; set; } = default!;
 
 	[Inject] private IPersistenceService _persistence { get; set; } = default!;
+	[Inject]
+	private IPopupService _popupService { get; set; } = default!;
+	[Inject]
+	private IParticipantsService _participantService { get; set; } = default!;
+	[Inject]
+	private NavigationManager NavigationManager { get; set; } = default!;
 
 	private IEnumerable<UpcomingEvent> _upcomingEvents = [];
 
@@ -103,12 +111,24 @@
 		RpcSocket.ServerConnectionChanged += (_, __) => InvokeAsync(StateHasChanged);
 	}
 
+	private async Task OpenResetDialog()
+	{
+		if (!await _popupService.Confirm("Are you sure you want to reset? History cannot be recovered"))
+		{
+			return;
+		}
+		await _persistence.Reset();
+		await _participantService.Reset();
+		NavigationManager.NavigateTo("/");
+	}
+
 	private async Task Connect(UpcomingEvent upcomingEvent)
 	{
 		_witnessState.EventId = upcomingEvent.Id;
 		_witnessState.EventName = upcomingEvent.Name;
 		await NavMenu.StartRpcConnections(_rpcInitializer, _witnessState);
 		await _persistence.RestoreIfAny(upcomingEvent.Id, upcomingEvent.Name);
+		NavigationManager.NavigateTo("/");
 	}
 
 	private IEnumerable<ParticipantEntry> LoadParticipants(UpcomingEvent upcomingEvent)

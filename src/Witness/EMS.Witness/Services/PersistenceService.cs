@@ -18,7 +18,13 @@ public class PersistenceService : IPersistenceService
 		_path = Path.Combine(FileSystem.Current.AppDataDirectory, "e.witness");
     }
 
-    public async Task RestoreIfAny(int eventId, string name)
+	public Task Reset()
+	{
+		File.Delete(_path);
+        return Task.CompletedTask;
+	}
+
+	public async Task RestoreIfAny(int eventId, string name)
     {
         try
         {
@@ -62,4 +68,5 @@ public interface IPersistenceService
 {
     public Task Store();
     public Task RestoreIfAny(int eventId, string name);
+    Task Reset();
 }
