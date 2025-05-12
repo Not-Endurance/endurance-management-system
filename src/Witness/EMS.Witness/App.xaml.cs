@@ -95,6 +95,10 @@ public partial class App : Application
 
 	private void HandleParticipantsUpdate(object? sender, (ParticipantEntry Participant, CollectionAction Action) args)
 	{
+		if (args.Action == CollectionAction.Remove)
+		{
+			this.startlistService.RemoveStartIfNecessary(args.Participant);
+		}
 		this.participantsService.Update(args.Participant, args.Action);
 	}
 

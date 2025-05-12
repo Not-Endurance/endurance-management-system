@@ -1,4 +1,5 @@
 ﻿using Core.ConventionalServices;
+using Core.Domain.AggregateRoots.Manager.Aggregates.Participants;
 using Core.Domain.AggregateRoots.Manager.Aggregates.Startlists;
 using Core.Enums;
 using Core.Models;
@@ -61,13 +62,26 @@ public class StartlistService : IStartlistService
     {
         entry.IsRestOver = entry.StartTime <= DateTimeOffset.Now;
     }
+
+	public void RemoveStartIfNecessary(ParticipantEntry entry)
+	{
+        var stage = StartlistsByStage.Values.LastOrDefault(x => 
+            x.Any(y => y.Number == entry.Number && y.StartTime > entry.ArriveTime));
+        if (stage == null)
+        {
+            return;
+        }
+        var match = stage.First(x => x.Number == entry.Number);
+        stage.Remove(match);
+	}
 }
 
 public interface IStartlistService : ISingletonService
-{
+{ 
     ObservableCollection<StartlistEntry> Startlist { get; }
     Dictionary<int, Startlist> StartlistsByStage { get; }
     Task Load();
     void Update(StartlistEntry entry, CollectionAction action);
+    void RemoveStartIfNecessary(ParticipantEntry entry);
     void SelectList(int? stage = null);
 }
