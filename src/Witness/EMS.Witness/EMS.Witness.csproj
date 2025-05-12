@@ -18,7 +18,7 @@
 
     <!-- Versions -->
     <ApplicationDisplayVersion>5.3</ApplicationDisplayVersion>
-    <ApplicationVersion>9</ApplicationVersion>
+    <ApplicationVersion>10</ApplicationVersion>
 
 		<CheckEolWorkloads>false</CheckEolWorkloads>
 
