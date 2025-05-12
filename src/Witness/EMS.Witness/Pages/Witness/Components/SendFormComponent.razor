@@ -20,7 +20,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var entry in this.ParticipantsService.Snapshots)
+            @foreach (var entry in this.ParticipantsService.Snapshots.ToList())
             {
                 <tr>
                     <td>

@@ -34,7 +34,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (var entry in this.StartlistService.Startlist)
+			@foreach (var entry in this.StartlistService.Startlist.ToList())
 			{
 				<tr class="@(entry.IsRestOver ? "text-muted" : "")">
 					<td>@entry.Number</td>

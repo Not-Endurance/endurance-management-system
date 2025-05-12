@@ -22,7 +22,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var arrive in this.ParticipantsService.Selected)
+                @foreach (var arrive in this.ParticipantsService.Selected.ToList())
                 {
                     <tr>
                         <td>
@@ -78,7 +78,7 @@
         <tbody>
             @lock(this.ParticipantsService.Participants)
             {
-                foreach (var arrive in this.ParticipantsService.Participants)
+                foreach (var arrive in this.ParticipantsService.Participants.ToList())
                 {
                     var isDisabled = this.ParticipantsService.Selected.Contains(arrive) ? true : false;
                     <tr>
