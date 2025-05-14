@@ -30,30 +30,8 @@ else
     exit 1
 fi
 
-rm -rf bin/$build/$target
-
 target=net8.0-android
 build=Release
-package_format="aab"
-
-dotnet publish \
- -f "$target" \
- -c "$build" \
- -p:AndroidKeyStore=true \
- -p:AndroidSigningKeyStore="$keystore_path" \
- -p:AndroidSigningKeyAlias="$alias" \
- -p:AndroidSigningKeyPass="$pass" \
- -p:AndroidSigningStorePass="$pass" \
- -p:AndroidPackageFormat="aab" \
- -p:AndroidUseApkSigner=true
-
-if [ $? -eq 1 ]; then
-    echo 'publish failed'
-else
-    cd "bin/$build/$target"
-    explorer .
-    cd -
-fi
 
 find "bin/$build/$target" -name "*.aab" | while read -r aab_path; do
     if [ -z "$aab_path" ]; then
