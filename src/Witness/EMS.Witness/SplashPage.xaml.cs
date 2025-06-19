@@ -10,10 +10,7 @@ public partial class SplashPage : ContentPage
 
     private async void SplashPage_Loaded(object? sender, EventArgs e)
     {
-        // Optional: load data or delay
-        await Task.Delay(2000); // simulate load
-
-        // Navigate to main shell or Blazor page
+        await Task.Delay(2000);
         Application.Current.MainPage = new MainPage();
     }
 }
