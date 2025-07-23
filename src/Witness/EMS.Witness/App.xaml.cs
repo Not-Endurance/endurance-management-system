@@ -31,7 +31,7 @@ public partial class App : Application
 		IParticipantsService arrivelistService)
 	{
 		this.InitializeComponent();
-        this.MainPage = new MainPage();
+        this.MainPage = new SplashPage();
         _state = state;
         _rpcInitalizer = rpcInitalizer;
 		_rpcSocket = rpcSocket;
