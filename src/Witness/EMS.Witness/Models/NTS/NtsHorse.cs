@@ -1,39 +1,11 @@
-﻿namespace EMS.Witness.Models;
+﻿using Core.Models;
 
-public class NtsHorse : NtsAggregateRoot
+namespace EMS.Witness.Models.NTS;
+
+public class NtsHorse : IIdentifiable
 {
-    public static NtsHorse Create(string? name, string? feiId)
-    {
-        return new(name, feiId);
-    }
+    public int Id { get; init; }
 
-    public static NtsHorse Update(int? id, string? name, string? feiId)
-    {
-        return new(id, name, feiId);
-    }
-
-    NtsHorse(string? name, string? feiId)
-        : this(GenerateId(), name, feiId) { }
-
-    [Newtonsoft.Json.JsonConstructor]
-    [System.Text.Json.Serialization.JsonConstructor]
-    public NtsHorse(int? id, string? name, string? feiId)
-        : base(id!.Value)
-    {
-        Name = Required(nameof(Name), name);
-        FeiId = feiId;
-    }
-
-    public string Name { get; }
-    public string? FeiId { get; }
-
-    public string Summarize()
-    {
-        return ToString();
-    }
-
-    public override string ToString()
-    {
-        return Name;
-    }
+    public string Name { get; init; } = default!;
+    public string? FeiId { get; init; }
 }

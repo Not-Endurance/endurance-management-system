@@ -2,6 +2,7 @@
 @using Core.Domain.AggregateRoots.Manager.Aggregates.Participants
 @using EMS.Witness.ConverterFactories
 @using EMS.Witness.Models
+@using EMS.Witness.Models.NTS
 @using EMS.Witness.Services
 
 @page "/config"
@@ -96,7 +97,7 @@
 	[Inject]
 	private NavigationManager NavigationManager { get; set; } = default!;
 
-	private IEnumerable<UpcomingEvent> _upcomingEvents = [];
+	private IEnumerable<UpcomingEventModel> _upcomingEvents = [];
 
 	private async Task ChangeRpcConnection(ChangeEventArgs e)
 	{
@@ -122,18 +123,18 @@
 		NavigationManager.NavigateTo("/");
 	}
 
-	private async Task Connect(UpcomingEvent upcomingEvent)
+	private async Task Connect(UpcomingEventModel upcomingEventModel)
 	{
-		_witnessState.EventId = upcomingEvent.Id;
-		_witnessState.EventName = upcomingEvent.Name;
+		_witnessState.EventId = upcomingEventModel.Id;
+		_witnessState.EventName = upcomingEventModel.Name;
 		await NavMenu.StartRpcConnections(_rpcInitializer, _witnessState);
-		await _persistence.RestoreIfAny(upcomingEvent.Id, upcomingEvent.Name);
+		await _persistence.RestoreIfAny(upcomingEventModel.Id, upcomingEventModel.Name);
 		NavigationManager.NavigateTo("/");
 	}
 
-	private IEnumerable<ParticipantEntry> LoadParticipants(UpcomingEvent upcomingEvent)
+	private IEnumerable<ParticipantEntry> LoadParticipants(UpcomingEventModel upcomingEventModel)
 	{
-		foreach (var competition in upcomingEvent.Competitions)
+		foreach (var competition in upcomingEventModel.Competitions)
 		{
 			foreach (var participation in competition.Participations)
 			{

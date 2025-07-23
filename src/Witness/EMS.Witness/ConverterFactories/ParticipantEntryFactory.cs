@@ -1,5 +1,6 @@
 ﻿using Core.Domain.AggregateRoots.Manager.Aggregates.Participants;
 using EMS.Witness.Models;
+using EMS.Witness.Models.NTS;
 
 namespace EMS.Witness.ConverterFactories;
 

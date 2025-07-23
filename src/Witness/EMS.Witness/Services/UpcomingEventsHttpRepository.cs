@@ -1,12 +1,13 @@
 using System.Linq.Expressions;
 using Core.Models;
 using EMS.Witness.Models;
+using EMS.Witness.Models.NTS;
 using EMS.Witness.Shared.Toasts;
 
 namespace EMS.Witness.Services;
 
 
-public class UpcomingEventHttpRepository : HttpRepository<UpcomingEvent>, IUpcomingEventRepository
+public class UpcomingEventHttpRepository : HttpRepository<UpcomingEventModel>, IUpcomingEventRepository
 {
     public UpcomingEventHttpRepository(NHttpClient httpClient, IToaster toaster) : base("upcoming-event", httpClient, toaster)
     {
@@ -15,7 +16,7 @@ public class UpcomingEventHttpRepository : HttpRepository<UpcomingEvent>, IUpcom
 
 public interface IUpcomingEventRepository
 {
-    Task<IEnumerable<UpcomingEvent>> ReadAll();
+    Task<IEnumerable<UpcomingEventModel>> ReadAll();
 }
 
 public abstract class HttpRepository<T>

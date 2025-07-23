@@ -1,6 +1,7 @@
 ﻿using Core.Domain.Enums;
 using Core.Domain.State.Competitions;
 using EMS.Witness.Models;
+using EMS.Witness.Models.NTS;
 
 namespace EMS.Witness.ConverterFactories;
 
@@ -23,22 +24,22 @@ public class CompetitionFactory
         return competition;
     }
 
-    public static CompetitionType MapCompetitionType(CompetitionRuleset ruleset)
+    public static CompetitionType MapCompetitionType(NtsCompetitionRuleset ruleset)
     {
         return ruleset switch
         {
-            CompetitionRuleset.Regional => CompetitionType.National,
-            CompetitionRuleset.FEI => CompetitionType.International,
+            NtsCompetitionRuleset.Regional => CompetitionType.National,
+            NtsCompetitionRuleset.FEI => CompetitionType.International,
             _ => throw new NotImplementedException(),
         };
     }
 
-    public static CompetitionRuleset MapCompetitionRuleset(CompetitionType emsCompetitionType)
+    public static NtsCompetitionRuleset MapCompetitionRuleset(CompetitionType emsCompetitionType)
     {
         return emsCompetitionType switch
         {
-            CompetitionType.National => CompetitionRuleset.Regional,
-            CompetitionType.International => CompetitionRuleset.FEI,
+            CompetitionType.National => NtsCompetitionRuleset.Regional,
+            CompetitionType.International => NtsCompetitionRuleset.FEI,
             _ => throw new NotImplementedException(),
         };
     }

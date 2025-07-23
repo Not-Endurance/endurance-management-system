@@ -1,34 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using Core.Models;
 
-namespace EMS.Witness.Models;
+namespace EMS.Witness.Models.NTS;
 
-public class Club : NtsAggregateRoot
+public class Club : IIdentifiable
 {
-    public static Club Create(string? name)
-    {
-        return new Club(name);
-    }
-
-    public static Club Update(int id, string? name)
-    {
-        return new Club(id, name);
-    }
-
-    public Club(string? name)
-        : this(GenerateId(), name) { }
-
-    [System.Text.Json.Serialization.JsonConstructor]
-    [JsonConstructor]
-    public Club(int id, string? name)
-        : base(id)
-    {
-        Name = Required(nameof(Name), name);
-    }
-
-    public string Name { get; }
-
-    public override string ToString()
-    {
-        return Name;
-    }
+    public int Id { get; init; }
+    public string Name { get; init; } = default!;
 }

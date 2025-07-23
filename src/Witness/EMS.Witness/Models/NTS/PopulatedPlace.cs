@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using EMS.Witness.Models.NTS;
 
 namespace EMS.Witness.Models;
 

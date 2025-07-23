@@ -2,6 +2,7 @@
 using Core.Domain.State.Participants;
 using Core.Domain.State.Participations;
 using EMS.Witness.Models;
+using EMS.Witness.Models.NTS;
 
 namespace EMS.Witness.ConverterFactories;
 

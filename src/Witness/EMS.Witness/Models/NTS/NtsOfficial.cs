@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using EMS.Witness.Models.NTS;
+using Newtonsoft.Json;
 
 namespace EMS.Witness.Models;
 

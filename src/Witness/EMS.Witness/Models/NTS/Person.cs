@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace EMS.Witness.Models;
+﻿namespace EMS.Witness.Models.NTS;
 
 public class Person
 {
@@ -10,7 +8,7 @@ public class Person
         {
             return null;
         }
-        return new Person(names.Split(DELIMITER, StringSplitOptions.RemoveEmptyEntries));
+        return new Person { Names = names.Split(DELIMITER, StringSplitOptions.RemoveEmptyEntries) };
     }
 
     public static implicit operator string[](Person member)
@@ -20,7 +18,7 @@ public class Person
 
     public static implicit operator Person(string[] names)
     {
-        return new Person(names);
+        return new Person { Names = names };
     }
 
     public static implicit operator string(Person person)
@@ -30,13 +28,7 @@ public class Person
 
     internal static string DELIMITER = " ";
 
-    [JsonConstructor]
-    public Person(string[] names)
-    {
-        Names = names;
-    }
-
-    public string[] Names { get; private set; } = []; // TODO: consider encapsulating this;
+    public string[] Names { get; init; } = []; // TODO: consider encapsulating this;
 
     public override string ToString()
     {

@@ -2,6 +2,7 @@
 using Core.Domain.State.Athletes;
 using Core.Domain.State.Countries;
 using EMS.Witness.Models;
+using EMS.Witness.Models.NTS;
 
 namespace EMS.Witness.ConverterFactories;
 
@@ -22,14 +23,14 @@ public class AthleteFactory
         return new Athlete(athleteState, country);
     }
 
-    public Category MapCategory(NtsAthleteCategory category)
+    public Category MapCategory(NtsParticipationCategory category)
     {
         return category switch
         {
-            NtsAthleteCategory.Senior => Category.Seniors,
-            NtsAthleteCategory.Children => Category.Children,
-            NtsAthleteCategory.JuniorOrYoungAdult => Category.JuniorOrYoungAdults,
-            NtsAthleteCategory.Training or NtsAthleteCategory.Companion => Category.Seniors,
+            NtsParticipationCategory.Senior => Category.Seniors,
+            NtsParticipationCategory.Children => Category.Children,
+            NtsParticipationCategory.JuniorOrYoungAdult => Category.JuniorOrYoungAdults,
+            NtsParticipationCategory.Training or NtsParticipationCategory.Companion => Category.Seniors,
             _ => throw new ArgumentOutOfRangeException(nameof(category), category, null),
         };
     }

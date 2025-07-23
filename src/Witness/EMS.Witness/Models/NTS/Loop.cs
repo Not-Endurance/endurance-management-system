@@ -1,38 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using Core.Models;
 
-namespace EMS.Witness.Models;
+namespace EMS.Witness.Models.NTS;
 
-public class Loop : NtsAggregateRoot
+public class Loop : IIdentifiable
 {
-    public static Loop Create(double? distance)
-    {
-        return new(distance);
-    }
+	public int Id { get; init; }
 
-    public static Loop Update(int? id, double? distance)
-    {
-        return new(id, distance);
-    }
-
-    [JsonConstructor]
-    public Loop(int? id, double? distance)
-        : base(id!.Value)
-    {
-        Distance = PositiveDistance(distance);
-    }
-
-    public Loop(double? distance)
-        : this(GenerateId(), distance) { }
-
-    public double Distance { get; }
-
-    public override string ToString()
-    {
-        return $"{Distance}km";
-    }
-
-    static double PositiveDistance(double? distance)
-    {
-        return distance ?? throw new Exception("typo");
-    }
+	public double Distance { get; init; }
 }
