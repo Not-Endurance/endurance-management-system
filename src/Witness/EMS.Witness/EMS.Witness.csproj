@@ -17,8 +17,8 @@
     <ApplicationIdGuid>E28F87C5-E076-4180-AB84-DBE4E9E99526</ApplicationIdGuid>
 
     <!-- Versions -->
-    <ApplicationDisplayVersion>5.3</ApplicationDisplayVersion>
-    <ApplicationVersion>12</ApplicationVersion>
+    <ApplicationDisplayVersion>5.5</ApplicationDisplayVersion>
+    <ApplicationVersion>14</ApplicationVersion>
 
 		<CheckEolWorkloads>false</CheckEolWorkloads>
 
