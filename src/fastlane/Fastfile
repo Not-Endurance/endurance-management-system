@@ -5,7 +5,7 @@ platform :android do
   lane :deploy do
     upload_to_play_store(
       track: ENV['PLAY_TRACK'], # Comes from GitHub Actions
-      json_key: "fastlane/test-473707-u5-8f9daa805c8c.json",
+      json_key: "fastlane/google-play-key.json",
       package_name: ENV['PACKAGE_NAME'],
       aab: "/src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness.aab"
     )
