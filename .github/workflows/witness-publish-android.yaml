@@ -66,7 +66,9 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: "projects/885247215557/locations/global/workloadIdentityPools/github-actions-pool-1/providers/github-provider"
-          service_account: "play-deployer@test-473707-u5.iam.gserviceaccount.com"
+          service_account: "google-play-nts-publisher@test-473707-u5.iam.gserviceaccount.com"
+          token_format: "access_token"
+          create_credentials_file: true
 
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@v2
