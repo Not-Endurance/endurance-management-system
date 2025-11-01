@@ -1,4 +1,4 @@
-name: Deploy Android to Google Play
+name: "[net8] Publish Android to Google Play"
 
 on:
   workflow_dispatch:
@@ -10,7 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  build-and-deploy:
+  witness-publish-android:
+    name: 🏗️ Build package
     runs-on: windows-latest
 
     steps:
@@ -22,6 +23,12 @@ jobs:
         with:
           dotnet-version: 8.0.x
           
+      - name: Cache .NET workloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.dotnet
+          key: ${{ runner.os }}-dotnet-maui-${{ hashFiles('**/*.csproj') }}
+          
       - name: 💼 Install MAUI Workloads
         run: dotnet workload install maui --skip-manifest-update
 
@@ -31,8 +38,19 @@ jobs:
       - name: Build Android Release AAB
         run: dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj -f:net8.0-android -c:Release
 
-      - name: Install Fastlane
-        run: sudo gem install fastlane -NV
+  publish-to-google-play:
+      runs-on: windows-latest
+      needs: witness-publish-android
+
+      steps:
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+            ruby-version: 3.3  # or latest supported version
+            bundler-cache: true
+
+      - name: Install Fastlane    
+        run: gem install fastlane -NV
 
       # Authenticate to Google using Workload Identity Federation
       - id: auth
