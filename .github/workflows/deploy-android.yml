@@ -1,0 +1,58 @@
+name: Deploy Android to Google Play
+
+on:
+  push:
+    branches:
+      - release-witness-v5
+
+permissions:
+  id-token: write   # Required for WIF
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install .NET MAUI workload
+        run: dotnet workload install maui
+
+      - name: Restore dependencies
+        run: dotnet restore src/Witness/EMS.Witness/EMS.Witness.csproj
+
+      - name: Build Android Release AAB
+        run: dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj -f:net8.0-android -c:Release
+
+      - name: Install Fastlane
+        run: sudo gem install fastlane -NV
+
+      # Authenticate to Google using Workload Identity Federation
+      - id: auth
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: "projects/885247215557/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
+          service_account: "play-deployer@test-473707-u5.iam.gserviceaccount.com"
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Export temporary JSON key for Fastlane
+        run: |
+          gcloud auth application-default print-access-token > token.txt
+          gcloud auth application-default print-access-token --format=json > fastlane/google-play-key.json
+          # (This file is ephemeral — valid only for this job)
+
+      - name: Deploy to Google Play
+        env:
+          PLAY_TRACK: ${{ secrets.PLAY_TRACK }}
+          PACKAGE_NAME: ${{ secrets.PACKAGE_NAME }}
+        run: fastlane android deploy
