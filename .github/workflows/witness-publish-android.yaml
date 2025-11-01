@@ -61,7 +61,7 @@ jobs:
         name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: "projects/885247215557/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
+          workload_identity_provider: "projects/885247215557/locations/global/workloadIdentityPools/github-actions-pool-1/providers/github-provider"
           service_account: "play-deployer@test-473707-u5.iam.gserviceaccount.com"
 
       - name: Set up gcloud
