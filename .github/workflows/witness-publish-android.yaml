@@ -34,7 +34,7 @@ jobs:
             ${{ runner.os }}-dotnet-maui-
           
       - name: 💼 Install MAUI Workloads
-        run: dotnet workload install maui --skip-manifest-update
+        run: dotnet workload install maui --skip-manifest-update --skip-sign-check
 
       - name: 📦 Restore dependencies
         run: dotnet restore ${{ env.SOURCE_PATH }}
