@@ -7,7 +7,7 @@ platform :android do
       track: ENV['PLAY_TRACK'], # Comes from GitHub Actions
       json_key: ENV['GOOGLE_APPLICATION_CREDENTIALS'],
       package_name: ENV['PACKAGE_NAME'],
-      aab: "/src/Witness/EMS.Witness/bin/Release/net8.0-android/com.ems.witness.aab"
+      aab: "/src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness.aab"
     )
   end
 end
