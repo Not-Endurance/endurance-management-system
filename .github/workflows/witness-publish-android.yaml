@@ -21,12 +21,12 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
+          
+      - name: 💼 Install MAUI Workloads
+        run: ~/.dotnet/dotnet workload install maui --skip-manifest-update
 
-      - name: Install .NET MAUI workload
-        run: dotnet workload install maui
-
-      - name: Restore dependencies
-        run: dotnet restore src/Witness/EMS.Witness/EMS.Witness.csproj
+      - name: 📦 Restore dependencies
+        run: ~/.dotnet/dotnet restore ${{ env.SOURCE_PATH }}
 
       - name: Build Android Release AAB
         run: dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj -f:net8.0-android -c:Release
