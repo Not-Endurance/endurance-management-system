@@ -39,6 +39,7 @@ jobs:
         run: dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj -f:net8.0-android -c:Release
 
   publish-to-google-play:
+      name: 🚀 Upload to Google Play
       runs-on: windows-latest
       needs: witness-publish-android
 
