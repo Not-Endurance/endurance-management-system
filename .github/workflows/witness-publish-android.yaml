@@ -42,6 +42,12 @@ jobs:
       - name: Build Android Release AAB
         run: dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj -f:net8.0-android -c:Release
 
+      - name: List publish folder
+        run: Get-ChildItem -Path "src\Witness\EMS.Witness\bin\Release\net8.0-android\publish" -Recurse
+
+      - name: List net8.0-android folder
+        run: Get-ChildItem -Path "src\Witness\EMS.Witness\bin\Release\net8.0-android" -Recurse
+
   publish-to-google-play:
       name: 🚀 Upload to Google Play
       runs-on: windows-latest
