@@ -53,6 +53,9 @@ jobs:
       - name: Install Fastlane    
         run: gem install fastlane -NV
 
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       # Authenticate to Google using Workload Identity Federation
       - id: auth
         name: Authenticate to Google Cloud
