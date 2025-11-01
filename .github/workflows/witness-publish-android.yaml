@@ -73,12 +73,6 @@ jobs:
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Export temporary JSON key for Fastlane
-        run: |
-          gcloud auth application-default print-access-token > token.txt
-          gcloud auth application-default print-access-token --format=json > fastlane/google-play-key.json
-          # (This file is ephemeral — valid only for this job)
-
       - name: Deploy to Google Play
         env:
           PLAY_TRACK: ${{ secrets.PLAY_TRACK }}
