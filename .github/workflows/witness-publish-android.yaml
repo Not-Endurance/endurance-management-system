@@ -66,7 +66,7 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: "projects/885247215557/locations/global/workloadIdentityPools/github-actions-pool-1/providers/github-provider"
-          service_account: "principalSet://iam.googleapis.com/projects/885247215557/locations/global/workloadIdentityPools/github-actions-pool-1/attribute.repository/mycompany/endurance-management-system"
+          service_account: "google-play-nts-publisher@test-473707-u5.iam.gserviceaccount.com"
           token_format: "access_token"
           create_credentials_file: true
 
