@@ -1,9 +1,9 @@
 name: Deploy Android to Google Play
 
 on:
-  push:
-    branches:
-      - release-witness-v5
+  workflow_dispatch:
+env:
+    SOURCE_PATH: src/Witness/EMS.Witness/
 
 permissions:
   id-token: write   # Required for WIF
@@ -23,10 +23,10 @@ jobs:
           dotnet-version: 8.0.x
           
       - name: 💼 Install MAUI Workloads
-        run: ~/.dotnet/dotnet workload install maui --skip-manifest-update
+        run: dotnet workload install maui --skip-manifest-update
 
       - name: 📦 Restore dependencies
-        run: ~/.dotnet/dotnet restore ${{ env.SOURCE_PATH }}
+        run: dotnet restore ${{ env.SOURCE_PATH }}
 
       - name: Build Android Release AAB
         run: dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj -f:net8.0-android -c:Release
