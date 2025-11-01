@@ -30,5 +30,7 @@
 	<string>Assets.xcassets/appicon.appiconset</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Needs to connect to Judge Main program to operate</string>
+	<key>CFBundleShortVersionString</key>
+	<string>5.5</string>
 </dict>
 </plist>
