@@ -30,13 +30,13 @@ jobs:
           key: ${{ runner.os }}-dotnet-maui-${{ hashFiles('**/*.csproj') }}
           
       - name: 💼 Install MAUI Workloads
-        run: dotnet workload install maui --skip-manifest-update
+        run: ~/.dotnet/dotnet workload install maui --skip-manifest-update
 
       - name: 📦 Restore dependencies
-        run: dotnet restore ${{ env.SOURCE_PATH }}
+        run: ~/.dotnet/dotnet restore ${{ env.SOURCE_PATH }}
 
       - name: Build Android Release AAB
-        run: dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj -f:net8.0-android -c:Release
+        run: ~/.dotnet/dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj -f:net8.0-android -c:Release
 
   publish-to-google-play:
       name: 🚀 Upload to Google Play
