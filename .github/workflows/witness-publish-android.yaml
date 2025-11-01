@@ -40,7 +40,7 @@ jobs:
         run: dotnet restore ${{ env.SOURCE_PATH }}
 
       - name: Build Android Release AAB
-        run: dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj -f:net8.0-android -c:Release
+        run: dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj -f:net8.0-android -c:Release -p:AndroidPackageFormat=aab
 
       - name: List publish folder
         run: Get-ChildItem -Path "src\Witness\EMS.Witness\bin\Release\net8.0-android\publish" -Recurse
