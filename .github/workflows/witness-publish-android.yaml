@@ -82,6 +82,14 @@ jobs:
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@v2
 
+      - name: Generate temporary service account JSON for Fastlane
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "fastlane" | Out-Null
+          gcloud auth application-default print-access-token --impersonate-service-account=google-play-nts-publisher@test-473707-u5.iam.gserviceaccount.com --format=json > fastlane/google-play-key.json
+        env:
+          CLOUDSDK_AUTH_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+
       - name: 📥 Download built AAB
         uses: actions/download-artifact@v4
         with:
