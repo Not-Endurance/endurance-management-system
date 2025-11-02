@@ -48,9 +48,6 @@ jobs:
           name: witness-aab
           path: src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness.aab
 
-      - name: List publish folder
-        run: Get-ChildItem -Path "src\Witness\EMS.Witness\bin\Release\net8.0-android\publish" -Recurse
-
   publish-to-google-play:
       name: 🚀 Upload to Google Play
       runs-on: windows-latest
