@@ -58,8 +58,10 @@ jobs:
           -p:AndroidSigningKeyPass=${{ secrets.KEYSTORE_PASSWORD }}
 
       - name: Verify AAB signature
+        shell: pwsh
         run: |
-          & "C:\Program Files\Android\jdk\microsoft_dist_openjdk_11.0.21.9\bin\jarsigner.exe" -verify -verbose -certs src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness.aab
+          $jarSigner = Join-Path $env:JAVA_HOME "bin/jarsigner.exe"
+          & $jarSigner -verify -verbose -certs src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness.aab
 
       - name: 📤 Upload AAB as artifact
         uses: actions/upload-artifact@v4
