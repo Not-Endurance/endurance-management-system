@@ -1,5 +1,6 @@
-name: "[net8] Publish Witness Android"
-
+name: "[net8] Publish Witness Android with WIF (not-yet-supported)"
+#Fastlane doesn't yet support WIF auth
+# https://github.com/fastlane/fastlane/discussions/19869
 on:
   workflow_dispatch:
 env:
