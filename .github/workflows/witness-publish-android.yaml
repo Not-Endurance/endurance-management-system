@@ -1,4 +1,4 @@
-name: "[net8] Publish Witness Android with Secret"
+name: "[net8] Publish Witness Android"
 
 on:
   workflow_dispatch:
