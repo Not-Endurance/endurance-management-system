@@ -77,8 +77,14 @@ jobs:
           name: witness-aab
           path: src/Witness/EMS.Witness/bin/Release/net8.0-android/publish
 
+      - name: Debug env vars
+        run: |
+          echo "PLAY_TRACK: $env:PLAY_TRACK"
+          echo "PACKAGE_NAME: $env:PACKAGE_NAME"
+          shell: pwsh
+
       - name: Deploy to Google Play
         env:
-          PLAY_TRACK: ${{ secrets.PLAY_TRACK }}
-          PACKAGE_NAME: ${{ secrets.PACKAGE_NAME }}
+          PLAY_TRACK: ${{ env.PLAY_TRACK }}
+          PACKAGE_NAME: ${{ env.PACKAGE_NAME }}
         run: fastlane android deploy
