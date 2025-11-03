@@ -39,8 +39,26 @@ jobs:
       - name: 📦 Restore dependencies
         run: dotnet restore ${{ env.SOURCE_PATH }}
 
+      - name: Restore signing key
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "signing" | Out-Null
+          $bytes = [System.Convert]::FromBase64String("${{ secrets.KEYSTORE_BASE64 }}")
+          [IO.File]::WriteAllBytes("signing/ems-keystore.keystore", $bytes)
+
       - name: Build Android Release AAB
-        run: dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj -f:net8.0-android -c:Release -p:AndroidPackageFormat=aab
+        run: dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj 
+          -f:net8.0-android 
+          -c:Release 
+          -p:AndroidPackageFormat=aab
+          -p:AndroidKeyStore=true
+          -p:AndroidSigningKeyStore=signing/ems-keystore.keystore `
+          -p:AndroidSigningStorePass=${{ secrets.KEYSTORE_PASSWORD }} `
+          -p:AndroidSigningKeyAlias=${{ secrets.KEY_ALIAS }}
+
+      - name: Verify AAB signature
+        run: |
+          & "C:\Program Files\Android\jdk\microsoft_dist_openjdk_11.0.21.9\bin\jarsigner.exe" -verify -verbose -certs src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness.aab
 
       - name: 📤 Upload AAB as artifact
         uses: actions/upload-artifact@v4
@@ -76,11 +94,6 @@ jobs:
         with:
           name: witness-aab
           path: src/Witness/EMS.Witness/bin/Release/net8.0-android/publish
-
-      - name: Debug env vars
-        run: |
-          echo "PLAY_TRACK: ${{ vars.PLAY_TRACK }}"
-          echo "PACKAGE_NAME:${{ vars.PACKAGE_NAME }}"
 
       - name: Deploy to Google Play
         env:
