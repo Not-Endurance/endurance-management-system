@@ -42,19 +42,9 @@ jobs:
       - name: Restore signing key
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path "signing" | Out-Null
+          New-Item -ItemType Directory -Force -Path "src/Witness/EMS.Witness/signing" | Out-Null
           $bytes = [System.Convert]::FromBase64String("${{ secrets.KEYSTORE_BASE64 }}")
-          [IO.File]::WriteAllBytes("signing/ems-keystore.keystore", $bytes)
-
-      - name: Verify keystore exists
-        shell: pwsh
-        run: |
-          if (Test-Path "signing/ems-keystore.keystore") {
-            Write-Host "✅ Keystore successfully restored."
-          } else {
-            Write-Error "❌ Keystore missing!"
-            dir signing
-          }
+          [IO.File]::WriteAllBytes("src/Witness/EMS.Witness/signing/ems-keystore.keystore", $bytes)
 
       - name: Build Android Release AAB
         run: dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj 
