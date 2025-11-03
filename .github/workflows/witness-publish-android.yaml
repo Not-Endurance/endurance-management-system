@@ -61,7 +61,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: witness-aab
-          path: src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness.aab
+          path: src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness-Signed.aab
 
   publish-to-google-play:
       name: 🚀 Upload to Google Play
