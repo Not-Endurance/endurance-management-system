@@ -46,6 +46,16 @@ jobs:
           $bytes = [System.Convert]::FromBase64String("${{ secrets.KEYSTORE_BASE64 }}")
           [IO.File]::WriteAllBytes("signing/ems-keystore.keystore", $bytes)
 
+      - name: Verify keystore exists
+        shell: pwsh
+        run: |
+          if (Test-Path "signing/ems-keystore.keystore") {
+            Write-Host "✅ Keystore successfully restored."
+          } else {
+            Write-Error "❌ Keystore missing!"
+            dir signing
+          }
+
       - name: Build Android Release AAB
         run: dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj 
           -f:net8.0-android 
