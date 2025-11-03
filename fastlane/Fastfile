@@ -7,7 +7,7 @@ platform :android do
       track: ENV['PLAY_TRACK'], # Comes from GitHub Actions
       json_key: "fastlane/google-play-key.json",
       package_name: ENV['PACKAGE_NAME'],
-      aab: "src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness.aab"
+      aab: "src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness-Signed.aab"
     )
   end
 end
