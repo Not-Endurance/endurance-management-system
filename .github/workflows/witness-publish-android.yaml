@@ -57,11 +57,6 @@ jobs:
           -p:AndroidSigningKeyAlias=${{ secrets.KEY_ALIAS }} `
           -p:AndroidSigningKeyPass=${{ secrets.KEYSTORE_PASSWORD }}
           
-      - name: Check target SDK in built AAB
-        shell: pwsh
-        run: |
-          unzip -p src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness-Signed.aab BUNDLE-METADATA/com/android/manifest/AndroidManifest.xml | Select-String "targetSdkVersion"
-
       - name: 📤 Upload AAB as artifact
         uses: actions/upload-artifact@v4
         with:
