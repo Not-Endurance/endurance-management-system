@@ -1,0 +1,31 @@
+name: "List tracks"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  list-tracks:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+  
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3
+  
+      - name: Install Fastlane
+        run: gem install fastlane -NV
+  
+      - name: Authenticate to Google
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: "projects/885247215557/locations/global/workloadIdentityPools/github-actions-pool-1/providers/github-provider"
+          service_account: "google-play-nts-publisher@test-473707-u5.iam.gserviceaccount.com"
+          create_credentials_file: true
+  
+      - name: List Google Play tracks
+        env:
+          PACKAGE_NAME: ${{ vars.PACKAGE_NAME }}
+        run: fastlane supply init --package_name $env:PACKAGE_NAME
