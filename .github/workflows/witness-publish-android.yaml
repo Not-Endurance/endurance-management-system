@@ -79,11 +79,11 @@ jobs:
 
       - name: Debug env vars
         run: |
-          echo "PLAY_TRACK: $env:PLAY_TRACK"
-          echo "PACKAGE_NAME: $env:PACKAGE_NAME"
+          echo "PLAY_TRACK: ${{ vars.PLAY_TRACK }}"
+          echo "PACKAGE_NAME:${{ vars.PACKAGE_NAME }}"
 
       - name: Deploy to Google Play
         env:
-          PLAY_TRACK: ${{ env.PLAY_TRACK }}
-          PACKAGE_NAME: ${{ env.PACKAGE_NAME }}
+          PLAY_TRACK: ${{ vars.PLAY_TRACK }}
+          PACKAGE_NAME: ${{ vars.PACKAGE_NAME }}
         run: fastlane android deploy
