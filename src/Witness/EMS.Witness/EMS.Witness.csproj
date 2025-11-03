@@ -2,11 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks>
-	<SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
-    <TargetPlatformVersion>34</TargetPlatformVersion>
-    <AndroidCompileSdkVersion>34</AndroidCompileSdkVersion>
-    <AndroidTargetSdkVersion>34</AndroidTargetSdkVersion>
-    <AndroidUseLatestPlatformSdk>true</AndroidUseLatestPlatformSdk>
     <OutputType>Exe</OutputType>
     <UseMaui>true</UseMaui>
     <SingleProject>true</SingleProject>
@@ -23,7 +18,7 @@
 
     <!-- Versions -->
     <ApplicationDisplayVersion>5.5</ApplicationDisplayVersion>
-    <ApplicationVersion>15</ApplicationVersion>
+    <ApplicationVersion>16</ApplicationVersion>
 
 		<CheckEolWorkloads>false</CheckEolWorkloads>
 
