@@ -54,7 +54,8 @@ jobs:
           -p:AndroidKeyStore=true
           -p:AndroidSigningKeyStore=signing/ems-keystore.keystore `
           -p:AndroidSigningStorePass=${{ secrets.KEYSTORE_PASSWORD }} `
-          -p:AndroidSigningKeyAlias=${{ secrets.KEY_ALIAS }}
+          -p:AndroidSigningKeyAlias=${{ secrets.KEY_ALIAS }} `
+          -p:AndroidSigningKeyPass=${{ secrets.KEYSTORE_PASSWORD }}
 
       - name: Verify AAB signature
         run: |
