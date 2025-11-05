@@ -47,13 +47,6 @@ jobs:
           Remove-Item -Recurse -Force src\Witness\EMS.Witness\bin -ErrorAction SilentlyContinue
           Remove-Item -Recurse -Force src\Witness\EMS.Witness\obj -ErrorAction SilentlyContinue
 
-      - name: 🧹 Clean build      
-        shell: pwsh
-        working-directory: src/Witness/EMS.Witness
-        run: |
-          $env:TargetFrameworks = "net8.0-android"
-          dotnet clean EMS.Witness.csproj -c Release
-
       - name: Restore signing key
         shell: pwsh
         run: |
