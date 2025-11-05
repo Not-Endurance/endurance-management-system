@@ -18,7 +18,11 @@
 
     <!-- Versions -->
     <ApplicationDisplayVersion>5.5</ApplicationDisplayVersion>
-    <ApplicationVersion>16</ApplicationVersion>
+ 	<ApplicationVersionCode>15</ApplicationVersionCode>
+  	<ApplicationVersionName>1.0.15</ApplicationVersionName>
+  	<AndroidTargetSdkVersion>34</AndroidTargetSdkVersion>
+  	<AndroidCompileSdkVersion>34</AndroidCompileSdkVersion>
+  	<AndroidUseLatestPlatformSdk>true</AndroidUseLatestPlatformSdk>
 
 		<CheckEolWorkloads>false</CheckEolWorkloads>
 
