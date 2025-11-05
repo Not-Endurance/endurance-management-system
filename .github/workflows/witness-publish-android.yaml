@@ -48,8 +48,10 @@ jobs:
           Remove-Item -Recurse -Force src\Witness\EMS.Witness\bin -ErrorAction SilentlyContinue
           Remove-Item -Recurse -Force src\Witness\EMS.Witness\obj -ErrorAction SilentlyContinue
 
-      - name: 🧹 Clean build
-        run: dotnet clean src/Witness/EMS.Witness/EMS.Witness.csproj -c Release
+      - name: 🧹 Clean build      
+        shell: pwsh
+        working-directory: src/Witness/EMS.Witness
+        run: dotnet clean EMS.Witness.csproj -c Release
 
       - name: Restore signing key
         shell: pwsh
