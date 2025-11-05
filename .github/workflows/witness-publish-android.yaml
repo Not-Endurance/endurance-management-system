@@ -55,16 +55,16 @@ jobs:
         shell: bash
         working-directory: src/Witness/EMS.Witness
         run: |
-          dotnet publish EMS.Witness.csproj \
-            -f:net8.0-android \
-            -c:Release \
-            -p:AndroidPackageFormat=aab \
-            -p:AndroidKeyStore=true \
-            -p:AndroidSigningKeyStore=signing/ems-keystore.keystore \
-            -p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}" \
-            -p:AndroidSigningKeyAlias="${{ secrets.KEY_ALIAS }}" \
-            -p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD }}" \
-            -p:AndroidSupportedAbis="armeabi-v7a;arm64-v8a;x86;x86_64"
+              dotnet --% publish EMS.Witness.csproj `
+                -f:net8.0-android `
+                -c:Release `
+                -p:AndroidPackageFormat=aab `
+                -p:AndroidKeyStore=true `
+                -p:AndroidSigningKeyStore=signing/ems-keystore.keystore `
+                -p:AndroidSigningStorePass=${{ secrets.KEYSTORE_PASSWORD }} `
+                -p:AndroidSigningKeyAlias=${{ secrets.KEY_ALIAS }} `
+                -p:AndroidSigningKeyPass=${{ secrets.KEYSTORE_PASSWORD }} `
+                -p:AndroidSupportedAbis=armeabi-v7a;arm64-v8a;x86;x86_64
                 
       - name: 🔍 Verify AAB manifest
         shell: pwsh
