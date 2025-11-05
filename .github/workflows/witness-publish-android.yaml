@@ -33,7 +33,7 @@ jobs:
             ${{ runner.os }}-dotnet-maui-
           
       - name: 💼 Install MAUI Android Workload
-        run: dotnet workload install maui-android --skip-manifest-update --skip-sign-check
+        run: dotnet workload install maui-android maui-ios --skip-manifest-update --skip-sign-check
 
       - name: 🩹 Install minimal iOS workload metadata
         run: dotnet workload install ios --ignore-failed-sources --skip-manifest-update --skip-sign-check
@@ -46,6 +46,9 @@ jobs:
         run: |
           Remove-Item -Recurse -Force src\Witness\EMS.Witness\bin -ErrorAction SilentlyContinue
           Remove-Item -Recurse -Force src\Witness\EMS.Witness\obj -ErrorAction SilentlyContinue
+
+      - name: 🧹 Clean build
+        run: dotnet clean src/Witness/EMS.Witness/EMS.Witness.csproj -c Release -ErrorAction SilentlyContinue
 
       - name: Restore signing key
         shell: pwsh
