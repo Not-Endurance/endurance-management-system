@@ -55,7 +55,7 @@ jobs:
         shell: bash
         working-directory: src/Witness/EMS.Witness
         run: |
-              dotnet --% publish EMS.Witness.csproj `
+              dotnet publish EMS.Witness.csproj `
                 -f:net8.0-android `
                 -c:Release `
                 -p:AndroidPackageFormat=aab `
