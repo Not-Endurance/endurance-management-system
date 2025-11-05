@@ -37,7 +37,16 @@ jobs:
         run: dotnet workload install maui --skip-manifest-update --skip-sign-check
 
       - name: 📦 Restore dependencies
-        run: dotnet restore ${{ env.SOURCE_PATH }}
+        run: dotnet restore
+
+      - name: Remove old outputs
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force src\Witness\EMS.Witness\bin -ErrorAction SilentlyContinue
+          Remove-Item -Recurse -Force src\Witness\EMS.Witness\obj -ErrorAction SilentlyContinue
+
+      - name: 🧹 Clean build
+        run: dotnet clean src/Witness/EMS.Witness/EMS.Witness.csproj -c Release
 
       - name: Restore signing key
         shell: pwsh
@@ -47,7 +56,9 @@ jobs:
           [IO.File]::WriteAllBytes("src/Witness/EMS.Witness/signing/ems-keystore.keystore", $bytes)
 
       - name: Build Android Release AAB
-        run: dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj 
+        shell: pwsh
+        run: | 
+          dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj 
           -f:net8.0-android 
           -c:Release 
           -p:AndroidPackageFormat=aab
@@ -56,6 +67,12 @@ jobs:
           -p:AndroidSigningStorePass=${{ secrets.KEYSTORE_PASSWORD }} `
           -p:AndroidSigningKeyAlias=${{ secrets.KEY_ALIAS }} `
           -p:AndroidSigningKeyPass=${{ secrets.KEYSTORE_PASSWORD }}
+          
+      - name: 🔍 Verify AAB manifest
+        shell: pwsh
+        run: |
+          unzip -p src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness-Signed.aab `
+            BUNDLE-METADATA/com/android/manifest/AndroidManifest.xml | Select-String "versionCode"
           
       - name: 📤 Upload AAB as artifact
         uses: actions/upload-artifact@v4
