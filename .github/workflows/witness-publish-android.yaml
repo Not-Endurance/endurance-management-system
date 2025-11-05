@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
 env:
     SOURCE_PATH: src/Witness/EMS.Witness/
-
 permissions:
   id-token: write   # Required for WIF
   contents: read
@@ -51,7 +50,9 @@ jobs:
       - name: 🧹 Clean build      
         shell: pwsh
         working-directory: src/Witness/EMS.Witness
-        run: dotnet clean EMS.Witness.csproj -c Release
+        run: |
+          $env:TargetFrameworks = "net8.0-android"
+          dotnet clean EMS.Witness.csproj -c Release
 
       - name: Restore signing key
         shell: pwsh
@@ -64,6 +65,7 @@ jobs:
         shell: pwsh
         working-directory: src/Witness/EMS.Witness
         run: | 
+          $env:TargetFrameworks = "net8.0-android"
           dotnet publish EMS.Witness.csproj 
           -f:net8.0-android `
           -c:Release `
