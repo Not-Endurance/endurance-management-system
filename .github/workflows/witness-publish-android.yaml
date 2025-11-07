@@ -54,7 +54,7 @@ jobs:
       - name: Build Android Release AAB
         shell: pwsh
         run: |
-              dotnet publish EMS.Witness.csproj `
+              dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj `
                 -f:net8.0-android `
                 -c:Release `
                 -p:AndroidPackageFormat=aab `
