@@ -64,13 +64,12 @@ jobs:
                 -p:AndroidSigningKeyAlias=${{ secrets.KEY_ALIAS }} `
                 -p:AndroidSigningKeyPass=${{ secrets.KEYSTORE_PASSWORD }}
 
-      - name: Get AndroidManifest.xml from AAB
-        shell: pwsh
+      - name: Decode AndroidManifest.xml
+        shell: bash
         run: |
-          $aab = "src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness-Signed.aab"
-          $out = "manifest.xml"
-          & bash -c "unzip -p $aab base/manifest/AndroidManifest.xml > $out"
-          Get-Content $out
+          echo "Decoding manifest from AAB..."
+          aapt dump xmltree src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness-Signed.aab base/manifest/AndroidManifest.xml > manifest_decoded.txt
+          cat manifest_decoded.txt
               
       - name: 📤 Upload AAB as artifact
         uses: actions/upload-artifact@v4
