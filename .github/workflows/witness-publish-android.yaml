@@ -64,11 +64,14 @@ jobs:
                 -p:AndroidSigningKeyAlias=${{ secrets.KEY_ALIAS }} `
                 -p:AndroidSigningKeyPass=${{ secrets.KEYSTORE_PASSWORD }}
 
-      - name: Inspect AAB contents
-        shell: bash
+      - name: Get AndroidManifest.xml from AAB
+        shell: pwsh
         run: |
-          unzip -l src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness-Signed.aab | grep manifest
-          
+          $aab = "src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness-Signed.aab"
+          $out = "manifest.xml"
+          & bash -c "unzip -p $aab base/manifest/AndroidManifest.xml > $out"
+          Get-Content $out
+              
       - name: 📤 Upload AAB as artifact
         uses: actions/upload-artifact@v4
         with:
