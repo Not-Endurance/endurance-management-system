@@ -67,11 +67,14 @@ jobs:
       - name: Decode manifest for verification
         shell: bash
         run: |
-          curl -Lo bundletool.jar https://github.com/google/bundletool/releases/latest/download/bundletool-all.jar
-          java -jar bundletool.jar dump manifest --bundle=src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness-Signed.aab --module=base > manifest_decoded.xml
+          echo "Downloading bundletool..."
+          curl -L -o bundletool.jar https://github.com/google/bundletool/releases/latest/download/bundletool-all.jar
+          echo "Running bundletool..."
+          java -jar bundletool.jar dump manifest \
+            --bundle=src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness-Signed.aab \
+            --module=base > manifest_decoded.xml
           echo "----- Decoded Manifest -----"
           cat manifest_decoded.xml
-
               
       - name: 📤 Upload AAB as artifact
         uses: actions/upload-artifact@v4
