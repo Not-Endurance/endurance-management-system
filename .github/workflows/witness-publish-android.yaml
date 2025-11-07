@@ -63,25 +63,42 @@ jobs:
                 -p:AndroidSigningStorePass=${{ secrets.KEYSTORE_PASSWORD }} `
                 -p:AndroidSigningKeyAlias=${{ secrets.KEY_ALIAS }} `
                 -p:AndroidSigningKeyPass=${{ secrets.KEYSTORE_PASSWORD }}
-
-      - name: Decode manifest for verification
-        shell: bash
-        run: |
-          echo "Downloading bundletool..."
-          curl -L -o bundletool.jar https://github.com/google/bundletool/releases/latest/download/bundletool-all.jar
-          echo "Running bundletool..."
-          java -jar bundletool.jar dump manifest \
-            --bundle=src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness-Signed.aab \
-            --module=base > manifest_decoded.xml
-          echo "----- Decoded Manifest -----"
-          cat manifest_decoded.xml
               
       - name: 📤 Upload AAB as artifact
         uses: actions/upload-artifact@v4
         with:
           name: witness-aab
           path: src/Witness/EMS.Witness/bin/Release/net8.0-android/publish/com.ems.witness-Signed.aab
-
+          
+  decode-manifest:
+    runs-on: ubuntu-latest
+    needs: witness-publish-android
+    steps:
+      - name: Download AAB artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: witness-aab
+          path: aab
+  
+      - name: Install Java (if missing)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+  
+      - name: Download bundletool
+        run: |
+          curl -fL -o bundletool.jar \
+            https://github.com/google/bundletool/releases/download/1.17.6/bundletool-all-1.17.6.jar
+          jar tf bundletool.jar | head -n 5
+  
+      - name: Dump manifest
+        run: |
+          java -jar bundletool.jar dump manifest \
+            --bundle=aab/com.ems.witness-Signed.aab \
+            --module=base > manifest_decoded.xml
+          cat manifest_decoded.xml
+          
   publish-to-google-play:
       name: 🚀 Upload to Google Play
       runs-on: windows-latest
