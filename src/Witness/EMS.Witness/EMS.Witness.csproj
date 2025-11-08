@@ -18,6 +18,7 @@
 
     <!-- Versions -->
     <ApplicationDisplayVersion>15</ApplicationDisplayVersion>
+	<ApplicationVersion>15</ApplicationVersion>
  	<ApplicationVersionCode>15</ApplicationVersionCode>
   	<ApplicationVersionName>1.0.15</ApplicationVersionName>
   	<AndroidTargetSdkVersion>34</AndroidTargetSdkVersion>
