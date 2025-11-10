@@ -17,9 +17,9 @@
     <ApplicationIdGuid>E28F87C5-E076-4180-AB84-DBE4E9E99526</ApplicationIdGuid>
 
     <!-- Versions -->
-    <ApplicationDisplayVersion>15</ApplicationDisplayVersion>
-	<ApplicationVersion>15</ApplicationVersion>
- 	<ApplicationVersionCode>15</ApplicationVersionCode>
+    <ApplicationDisplayVersion>5.6</ApplicationDisplayVersion>
+	<ApplicationVersion>16</ApplicationVersion>
+ 	<ApplicationVersionCode>16</ApplicationVersionCode>
   	<ApplicationVersionName>1.0.15</ApplicationVersionName>
   	<AndroidTargetSdkVersion>35</AndroidTargetSdkVersion>
   	<AndroidCompileSdkVersion>35</AndroidCompileSdkVersion>
