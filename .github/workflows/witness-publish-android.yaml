@@ -57,7 +57,7 @@ jobs:
               dotnet publish src/Witness/EMS.Witness/EMS.Witness.csproj `
                 -f:net8.0-android `
                 -c:Release `
-                -p:AndroidVersion=15 `
+                -p:AndroidVersionCode=15 `
                 -p:AndroidPackageFormat=aab `
                 -p:AndroidKeyStore=true `
                 -p:AndroidSigningKeyStore=signing/ems-keystore.keystore `
